@@ -1,0 +1,27 @@
+[
+  {
+    "id": "cv",
+    "roles": [
+      { "title": "QA Engineer", "org": "Orange Services", "place": "Bucharest", "start": "May 2025", "end": "Present" },
+      { "title": "Front Office Engineer (SSPO)", "org": "Orange Services", "place": "Bucharest", "start": "Oct 2023", "end": "May 2025" },
+      { "title": "Customer Support Specialist", "org": "Majorel (Bolt UK)", "place": "Remote", "start": "Aug 2021", "end": "Sep 2022" }
+    ],
+    "education": [
+      { "title": "MSc Mobile Communications", "org": "POLITEHNICA Bucharest", "start": "2024", "end": "2026", "detail": "9.14/10. Thesis \"Multiple Access Techniques for 6G Systems (NOMA, RSMA, OAM)\", graded 10/10." },
+      { "title": "BEng Telecommunications and Communication Systems", "org": "POLITEHNICA Bucharest", "start": "2020", "end": "2024" }
+    ],
+    "skills": [
+      { "group": "Data and BI", "items": ["Power BI (Power Query, DAX)", "Grafana", "SQL", "Python", "ETL", "REST APIs"] },
+      { "group": "Databases", "items": ["PostgreSQL", "MySQL", "MongoDB", "SQLite"] },
+      { "group": "Infrastructure", "items": ["Ubuntu Server", "Proxmox", "systemd", "Bash", "Docker", "Compose", "Nginx"] },
+      { "group": "Observability and network", "items": ["Prometheus", "Loki", "Tailscale", "Cloudflare", "Azure"] },
+      { "group": "Tooling", "items": ["Git", "Jira"] },
+      { "group": "Languages", "items": ["JS/TS", "Java", "MATLAB", "Verilog", "C#", "C++"] }
+    ],
+    "certifications": ["Microsoft Azure AI", "AI Fluency", "Change Management", "Cloud Fundamentals", "MATLAB Onramp", "Cambridge English C2", "ECDL"],
+    "languages": [
+      { "name": "Romanian", "level": "Native" },
+      { "name": "English", "level": "Cambridge C2" }
+    ]
+  }
+]

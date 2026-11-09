@@ -1,0 +1,64 @@
+/* THE single place for design choices. Colours, fonts, scale, spacing, motion: change them here only. */
+:root {
+  /* Palette "Dusk" (see design/DESIGN.md) */
+  --sky-700:#565c73;  /* upper sky, deep slate-lavender */
+  --sky-500:#7e839a;  /* sky */
+  --sky-300:#b4b4c6;  /* lower sky */
+  --haze-200:#ddd6cc; /* haze above the horizon */
+  --haze-100:#ece7df; /* light page ground */
+  --paper:#f5f3ee;    /* the white tee: lightest surface, text on dark */
+  --gold-400:#f0bf4f; /* sun: THE accent. Lines, focus, one CTA. Never body text on light */
+  --amber-500:#e09a2e;/* low sun: hover/active of gold */
+  --amber-800:#8a560a;/* gold as text on light grounds (AA) */
+  --water-900:#141a22;/* deepest water: dark ground, ink on light */
+  --water-800:#1d2631;/* dark surface */
+  --water-600:#34414f;/* borders on dark, muted fills */
+  --water-400:#66737f;/* muted text on dark is --sky-300, this is for rules */
+  --taupe-500:#6f6759;/* the jacket: secondary accent, tags, quiet buttons */
+  --taupe-300:#a39a8a;
+
+  /* Semantic aliases (default = light ground; .ground-* classes in base.css remap them) */
+  --ground: var(--haze-100);
+  --surface: var(--paper);
+  --ink: var(--water-900);
+  --muted: var(--sky-700);
+  --line: var(--taupe-300);
+  --accent: var(--gold-400);
+  --accent-hover: var(--amber-500);
+  --accent-text: var(--amber-800);
+
+  /* Fonts */
+  --font-display: 'Archivo Variable', 'Archivo', system-ui, sans-serif;
+  --font-text: 'Schibsted Grotesk', system-ui, sans-serif;
+  --font-mono: 'Martian Mono', ui-monospace, monospace;
+
+  /* Type scale */
+  --fs-xs: 12px;
+  --fs-sm: 14px;
+  --fs-base: 17px;
+  --fs-md: 22px;
+  --fs-lg: 32px;
+  --fs-xl: 56px;
+  --fs-display: clamp(64px, 11vw, 176px);
+  --lh-text: 1.55;
+  --lh-display: 0.92;
+  --measure: 64ch;
+
+  /* Spacing and grid */
+  --gutter: 24px;
+  --margin: clamp(20px, 5vw, 80px);
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 48px;
+  --space-5: 96px;
+  --space-6: clamp(96px, 14vw, 192px);
+  --radius: 2px;
+  --radius-card: 10px;
+
+  /* Motion */
+  --ease-tide: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-ui: 0.6s;
+  --dur-reveal: 0.9s;
+  --dur-scene: 1.4s;
+}
