@@ -8,7 +8,7 @@ live: minecraft
 numbers:
   - { value: 6, suffix: " h", label: "between world backups" }
   - { value: 7, suffix: " days", label: "of snapshots kept" }
-  - { value: 95, suffix: "%", label: "less backup disk after switching to incremental snapshots" }
+  - { value: 95, suffix: "%", label: "less backup disk (incremental)" }
   - { value: 1, label: "server-side mod written by me" }
 stack:
   - { group: Server, items: [Fabric, "Vanilla+", "Java 25", Datapacks] }

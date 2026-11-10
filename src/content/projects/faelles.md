@@ -5,16 +5,16 @@ tagline: "A shared trip photo and video app with resumable uploads and a map."
 status: retired
 year: 2026
 numbers:
-  - { value: 153, label: "automated tests" }
-  - { value: 2, label: "phone families tested: iOS and Android" }
-  - { value: 1, label: "container: one Node process, one SQLite file" }
+  - { value: 146, label: "automated tests" }
+  - { value: 2, label: "phone families tested" }
+  - { value: 1, label: "container, one Node + SQLite" }
 stack:
   - { group: Backend, items: [Node 22, Fastify, "tus resumable uploads", "SQLite (WAL)"] }
   - { group: Media, items: [exiftool, libvips, ffmpeg] }
   - { group: Frontend, items: ["React 19", Vite, Zustand, MapLibre] }
   - { group: Quality, items: [Vitest, Playwright] }
 facts:
-  - { label: Tests, value: "153" }
+  - { label: Tests, value: "146" }
   - { label: Retired, value: "October 2026" }
 story:
   - label: Problem
@@ -30,7 +30,7 @@ story:
     text: "iOS can take a long time to copy originals out of the photo library, so each pick keeps its own file input alive until the upload ends. On Android I moved the upload bytes to the browser's download manager so they continue with the screen locked, and copied files into plain blobs because Chrome sent empty bodies for input-backed files. Photos from iOS 26 had no previews until I moved the image to a base that ships a newer HEIC library."
   - label: Result
     title: "Tested end to end, then retired"
-    text: "153 automated tests cover the server and the upload flow, with end-to-end runs at phone and desktop sizes. Capture times are tested against synthetic files for each phone family, PIN attempts are throttled and uploads are refused before the disk fills. The trip ended and I retired the app and archived the repository."
+    text: "146 automated tests cover the server and the upload flow, with end-to-end runs at phone and desktop sizes. Capture times are tested against synthetic files for each phone family, PIN attempts are throttled and uploads are refused before the disk fills. The trip ended and I retired the app and archived the repository."
     shot: "faelles/who.webp | fælles. 'Who's this?' screen: four circular avatars with placeholder names to choose from"
 screenshots:
   - "faelles/library.webp | fælles. library on a phone: a trip summary, a featured memory film, filter chips and a day section with a row of thumbnails above a bottom navigation bar"

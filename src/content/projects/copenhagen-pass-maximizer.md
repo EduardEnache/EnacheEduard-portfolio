@@ -7,7 +7,7 @@ year: 2026
 numbers:
   - { value: 73, label: "automated tests" }
   - { value: 5, label: "itinerary variants per trip" }
-  - { value: 96, suffix: " h", label: "card validity the calculator is built around" }
+  - { value: 96, suffix: " h", label: "card validity it is built around" }
 stack:
   - { group: App, items: [Vite, React, TypeScript, "React Router"] }
   - { group: Offline, items: ["PWA service worker"] }

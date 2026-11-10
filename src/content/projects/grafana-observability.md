@@ -6,7 +6,7 @@ status: live
 year: 2026
 live: health
 numbers:
-  - { value: 63, label: "panels on the command-centre dashboard" }
+  - { value: 63, label: "panels on the command centre" }
   - { value: 8, label: "rows, one per area or project" }
   - { value: 14, suffix: " days", label: "of metric history kept" }
   - { value: 6, label: "Prometheus scrape jobs" }

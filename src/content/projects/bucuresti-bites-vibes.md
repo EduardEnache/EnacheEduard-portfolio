@@ -5,9 +5,9 @@ tagline: "A mobile-first app to discover Bucharest venues."
 status: archived
 year: 2026
 numbers:
-  - { value: 4, label: "venue states: to try, visited, favorite, not going" }
-  - { value: 7, label: "kinds of activity events in the feed" }
-  - { value: 3, label: "Google APIs used: Maps, Places, Geocoding" }
+  - { value: 4, label: "venue states, to-try to visited" }
+  - { value: 7, label: "activity event kinds in the feed" }
+  - { value: 3, label: "Google APIs: Maps, Places, Geo" }
 stack:
   - { group: Frontend, items: ["Next.js 14", "Tailwind CSS", "Framer Motion"] }
   - { group: Backend, items: ["Next.js route handlers", PostgreSQL, Prisma, "NextAuth (Google OAuth)"] }

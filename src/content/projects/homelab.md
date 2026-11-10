@@ -6,10 +6,10 @@ status: live
 year: 2026
 live: health
 numbers:
-  - { value: 7, label: "Compose stacks in the service registry" }
+  - { value: 7, label: "Compose stacks in the registry" }
   - { value: 5, suffix: " min", label: "between watchdog checks" }
-  - { value: 3, suffix: " min", label: "health gate before an update rolls back" }
-  - { value: 12, suffix: " h", label: "repeat reminder for a problem that stays open" }
+  - { value: 3, suffix: " min", label: "health gate before a rollback" }
+  - { value: 12, suffix: " h", label: "repeat reminder while open" }
 stack:
   - { group: Platform, items: [Proxmox, "Ubuntu Server", "Docker Compose"] }
   - { group: Automation, items: [systemd, Bash, "Unattended upgrades"] }
