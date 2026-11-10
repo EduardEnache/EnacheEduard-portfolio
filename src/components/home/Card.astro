@@ -21,7 +21,7 @@ const [first, second] = shots;
     <span class="in">
       {first ? (
         <span class="fa">
-          <Image src={first.src} alt="" widths={[320, 480]} sizes="(max-width: 700px) 50vw, 14vw" loading="lazy" draggable="false" transition:name={`shot-${slug}`} />
+          <Image src={first.src} alt="" widths={[320, 480]} sizes="(max-width: 700px) 60vw, 14vw" loading="lazy" draggable="false" transition:name={`shot-${slug}`} />
         </span>
       ) : (
         <span class={`fa t ${art.theme}`}>
@@ -31,7 +31,7 @@ const [first, second] = shots;
         </span>
       )}
       {second ? (
-        <span class="fb"><Image src={second.src} alt="" widths={[320, 480]} sizes="(max-width: 700px) 50vw, 14vw" loading="lazy" draggable="false" /></span>
+        <span class="fb"><Image src={second.src} alt="" widths={[320, 480]} sizes="(max-width: 700px) 60vw, 14vw" loading="lazy" draggable="false" /></span>
       ) : !first ? (
         <span class="fb ta"><span class="tn o">{title}</span></span>
       ) : null}

@@ -4,15 +4,36 @@ title: "Minecraft SMP"
 tagline: "A Fabric vanilla+ server for friends, with live status from the homelab."
 status: live
 year: 2026
-
+live: minecraft
+numbers:
+  - { value: 6, suffix: " h", label: "between world backups" }
+  - { value: 7, suffix: " days", label: "of snapshots kept" }
+  - { value: 95, suffix: "%", label: "less backup disk after switching to incremental snapshots" }
+  - { value: 1, label: "server-side mod written by me" }
 stack:
-  - { group: Server, items: [Fabric, "Vanilla+"] }
-  - { group: Extras, items: [BlueMap, "Telegram feed"] }
+  - { group: Server, items: [Fabric, "Vanilla+", "Java 25", Datapacks] }
+  - { group: Mods, items: [Lithium, FerriteCore, Chunky, BlueMap, "Own villager and chunk-loading mod"] }
+  - { group: Operations, items: [restic, "Telegram bot", "Python sidecar", Docker] }
 facts:
   - { label: Map, value: "public BlueMap" }
   - { label: Leaderboard, value: "deaths" }
-  - { label: Backups, value: "yes" }
-screenshots: []
+  - { label: Backups, value: "every 6 hours, 7 days kept" }
+story:
+  - label: Problem
+    title: "Vanilla survival that nobody has to install anything for"
+    text: "Friends wanted a survival server that plays like the real game. I picked Fabric with server-side-only mods instead of Paper, because Paper changes redstone and duplication behaviour, and nobody needs a client mod to join."
+    shot: "minecraft/bluemap.webp | The public BlueMap web map seen from above: forests, olive plateaus, rivers and a large bay, with a marker at the world spawn"
+  - label: How it works
+    title: "A sidecar that reads the log"
+    text: "A small Python service with no dependencies tails the server log. It posts joins and deaths to a Telegram group, builds the death leaderboard and playtime stats, and checks server status with the game's own list ping, cached for 15 seconds. Failures degrade one feature at a time, and it never crash-loops. BlueMap renders the public map, and the Live page of this site reads the same status and leaderboard."
+  - label: The hard part
+    title: "Changing the game without breaking it"
+    text: "I wrote a server-side mod so zombies always convert villagers and cured villagers give shared discounts. I tested the conversion 10 times out of 10 before trusting it. Because the mod has to be rebuilt for each Minecraft version, upgrades go through a script that checks mod readiness first, and the weekly auto-update skips this stack. Everyone joins from the same local address behind the tunnel, so I turned off login sessions to stop one player taking over another's name."
+  - label: Result
+    title: "Backups that fit the disk"
+    text: "Backups had grown to 99 GB, because each full archive included the rendered map. I switched to incremental snapshots, left the map render out, and the folder dropped to 4.6 GB. I restored a full world from a snapshot to prove it works, and snapshots now run every 6 hours and are kept for 7 days."
+screenshots:
+  - "minecraft/bluemap.webp | The public BlueMap web map seen from above: forests, olive plateaus, rivers and a large bay, with a marker at the world spawn"
 ---
 A vanilla+ survival server for friends with a public BlueMap, a death leaderboard, a Telegram feed of server events and
 backups. Its live status and leaderboard are served from the homelab to the Live page of this site.
