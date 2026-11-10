@@ -1,6 +1,5 @@
 ---
 import Card from './Card.astro';
-import { shotsOf } from './shots';
 import type { CollectionEntry } from 'astro:content';
 
 interface Props { projects: CollectionEntry<'projects'>[] }
@@ -23,7 +22,7 @@ const first = projects[0];
       <div class="fan-zone">
         <ol class="fan" aria-label="Projects">
           {projects.map((p, i) => (
-            <Card slug={p.id} index={i} title={p.data.title} tagline={p.data.tagline} status={p.data.status} year={p.data.year} shots={shotsOf(p.data.screenshots)} />
+            <Card slug={p.id} index={i} title={p.data.title} tagline={p.data.tagline} status={p.data.status} year={p.data.year} />
           ))}
         </ol>
         <div class="hub">

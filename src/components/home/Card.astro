@@ -1,13 +1,10 @@
 ---
-import { Image } from 'astro:assets';
 import { artFor, drawable } from './art';
-import type { CardShot } from './shots';
 
-interface Props { slug: string; index: number; title: string; tagline: string; status: string; year: number; shots: CardShot[] }
-const { slug, index, title, tagline, status, year, shots } = Astro.props;
+interface Props { slug: string; index: number; title: string; tagline: string; status: string; year: number }
+const { slug, index, title, tagline, status, year } = Astro.props;
 const n = String(index + 1).padStart(2, '0');
 const art = artFor(slug);
-const [first, second] = shots;
 ---
 <li class="spoke" style={`--i:${index}`}>
   <a
@@ -18,22 +15,13 @@ const [first, second] = shots;
     data-stat={`${status} / ${year}`}
   >
     <span class="in" aria-hidden="true">
-      {first ? (
-        <span class="fa">
-          <Image src={first.src} alt="" widths={[320, 480, 720, 960]} sizes="(max-width: 700px) 66vw, 14vw" loading="lazy" draggable="false" transition:name={`shot-${slug}`} />
+      <span class={`fa t ${art.theme}`}>
+        <span class="num">{n}</span>
+        <span class="emblem" transition:name={`emblem-${slug}`}>
+          <svg viewBox="0 0 100 100" aria-hidden="true" set:html={drawable(art.svg)} />
         </span>
-      ) : (
-        <span class={`fa t ${art.theme}`}>
-          <svg class="dr" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.2" set:html={drawable(art.svg)} />
-          <span class="num" aria-hidden="true">{n}</span>
-          <span class="tn">{title}</span>
-        </span>
-      )}
-      {second ? (
-        <span class="fb"><Image src={second.src} alt="" widths={[320, 480, 720, 960]} sizes="(max-width: 700px) 66vw, 14vw" loading="lazy" draggable="false" /></span>
-      ) : !first ? (
-        <span class="fb ta"><span class="tn o">{title}</span></span>
-      ) : null}
+        <span class="tn">{title}</span>
+      </span>
       <span class="band"><span>{n}</span><span>{status}</span></span>
     </span>
     <span class="cap"><b>{title}</b><span>{tagline}</span><i>{status} / {year}</i></span>

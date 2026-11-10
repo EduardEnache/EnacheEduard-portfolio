@@ -21,20 +21,17 @@
 .spoke { flex: 0 0 var(--cw); scroll-snap-align: start; }
 .card { display: block; text-decoration: none; color: inherit; -webkit-user-drag: none; }
 .card .in { position: relative; display: block; height: var(--ch); border-radius: var(--radius-card); overflow: hidden; background: var(--surface); border: 1px solid var(--line); }
-.card .fa, .card .fb { position: absolute; inset: 0 0 36px 0; display: block; overflow: hidden; }
-.card .fb, .card .fb.ta { display: none; }
-.card img { width: 100%; height: 100%; object-fit: cover; object-position: 0 0; pointer-events: none; }
-.card .fa.t { display: flex; align-items: flex-end; padding: 14px; }
-.card .tn { position: relative; font-family: var(--font-display); font-weight: 800; font-variation-settings: 'wdth' 88; text-transform: uppercase; letter-spacing: -0.01em; line-height: 0.98; font-size: calc(var(--cw) * 0.1); }
-.card .tn.o { color: transparent; -webkit-text-stroke: 1.2px var(--water-900); }
-.card .fb.ta { background: var(--paper); color: var(--water-900); align-items: flex-end; padding: 14px; }
-.t.water { background: var(--water-600); color: var(--paper); }
-.t.sky { background: var(--sky-500); color: var(--water-900); }
-.t.taupe { background: var(--taupe-500); color: var(--paper); }
-.t.haze { background: var(--haze-200); color: var(--water-900); }
-.card .num { position: absolute; left: 12px; top: 8px; font-family: var(--font-mono); font-size: calc(var(--cw) * 0.34); line-height: 1; letter-spacing: -0.06em; opacity: 0.9; }
-.card .dr { position: absolute; left: 0; top: 0; width: 100%; height: 68%; }
-.card .dr * { stroke-dasharray: 1; stroke-dashoffset: 0; }
+.card .fa { position: absolute; inset: 0 0 36px 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.card .tn { position: absolute; left: 14px; right: 14px; bottom: 12px; font-family: var(--font-display); font-weight: 800; font-variation-settings: 'wdth' 88; text-transform: uppercase; letter-spacing: -0.01em; line-height: 0.98; font-size: calc(var(--cw) * 0.1); }
+.t.water { background: var(--water-600); }
+.t.sky { background: var(--sky-700); }
+.t.taupe { background: var(--taupe-500); }
+.t.ink { background: var(--water-800); }
+.t { color: var(--paper); }
+.card .num { position: absolute; left: 12px; top: 8px; font-family: var(--font-mono); font-size: calc(var(--cw) * 0.2); line-height: 1; letter-spacing: -0.04em; opacity: 0.9; }
+.card .emblem { display: block; width: 62%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; margin-bottom: 24%; }
+.emblem svg { display: block; width: 100%; height: 100%; }
+.emblem .st * { stroke-dasharray: 1; stroke-dashoffset: 0; }
 .card .band { position: absolute; left: 0; right: 0; bottom: 0; height: 36px; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; background: var(--paper); color: var(--water-900); font-family: var(--font-mono); font-size: calc(var(--fs-xs) * 0.85); letter-spacing: 0.08em; text-transform: uppercase; }
 .card .cap { display: flex; flex-direction: column; gap: 6px; margin-top: var(--space-2); }
 .card .cap b { font-family: var(--font-display); font-weight: 800; font-variation-settings: 'wdth' 112; text-transform: uppercase; font-size: 15px; line-height: 1.05; }
@@ -67,10 +64,8 @@
 .has-motion .card { position: absolute; width: var(--cw); height: var(--ch); left: calc(var(--cw) / -2); top: calc(-1 * (var(--R) + var(--ch))); }
 .has-motion .card .in { position: absolute; inset: 0; height: auto; }
 .has-motion .card.on .in { border-color: var(--accent); }
-.has-motion .card .fb { display: block; opacity: 0; mask-size: calc(var(--cell) * 8) calc(var(--cell) * 8); }
-.has-motion .card .fb.ta { display: flex; }
 .has-motion .card .cap { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; } /* stays the link's accessible name */
-.has-motion .card.on .dr * { animation: draw var(--dur-scene) var(--ease-tide) both; }
+.has-motion .card.on .emblem .st * { animation: draw var(--dur-scene) var(--ease-tide) both; }
 @keyframes draw { from { stroke-dashoffset: 1; } }
 .has-motion .hub {
   position: absolute; z-index: 1; left: 50%; bottom: 0; transform: translateX(-50%); width: calc(var(--rh) * 2); height: var(--rh);
@@ -92,5 +87,5 @@
   .has-motion .kn .row { animation: none; --w: var(--wdth-max); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .has-motion .kn .col, .has-motion .kn .row, .has-motion .card.on .dr * { animation: none; }
+  .has-motion .kn .col, .has-motion .kn .row, .has-motion .card.on .emblem .st * { animation: none; }
 }

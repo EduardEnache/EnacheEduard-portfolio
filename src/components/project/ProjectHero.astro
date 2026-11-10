@@ -1,11 +1,9 @@
 ---
-import { Image } from 'astro:assets';
 import { artFor, drawable } from '../home/art';
-import type { CardShot } from '../home/shots';
 import { longest, type ProjectData } from './data';
 
-interface Props { slug: string; data: ProjectData; total: number; shot?: CardShot }
-const { slug, data, total, shot } = Astro.props;
+interface Props { slug: string; data: ProjectData; total: number }
+const { slug, data, total } = Astro.props;
 const n = String(data.order).padStart(2, '0');
 const art = artFor(slug);
 const long = longest(data.title) > 8;
@@ -23,14 +21,12 @@ const long = longest(data.title) > 8;
     </div>
     <figure class="p-frame">
       <span class="in">
-        {shot ? (
-          <Image src={shot.src} alt={shot.alt || `${data.title} screenshot`} widths={[640, 960, 1280]} sizes="(max-width: 700px) 100vw, 40vw" loading="eager" fetchpriority="high" transition:name={`shot-${slug}`} />
-        ) : (
-          <span class={`art t ${art.theme}`}>
-            <svg class="dr" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.2" set:html={drawable(art.svg)} />
-            <span class="num" aria-hidden="true">{n}</span>
+        <span class={`art t ${art.theme}`}>
+          <span class="num" aria-hidden="true">{n}</span>
+          <span class="emblem" transition:name={`emblem-${slug}`}>
+            <svg viewBox="0 0 100 100" aria-hidden="true" set:html={drawable(art.svg)} />
           </span>
-        )}
+        </span>
         <span class="band"><span>{n}</span><span>{data.status}</span></span>
       </span>
     </figure>
