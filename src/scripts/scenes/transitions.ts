@@ -43,3 +43,18 @@ document.addEventListener('astro:before-preparation', (e) => {
   apply();
 });
 document.addEventListener('astro:after-swap', apply);
+
+/** Focus after a client-side navigation (the swap leaves it on <body>): the card we came from when going Back home, else <main>. */
+let navigated = false, leftSlug = '';
+document.addEventListener('astro:before-preparation', (e) => {
+  navigated = true;
+  leftSlug = e.to.pathname === '/' ? e.from.pathname.match(/^\/work\/([^/]+)/)?.[1] ?? '' : '';
+});
+document.addEventListener('astro:page-load', () => {
+  if (!navigated) return;
+  navigated = false;
+  const main = document.querySelector<HTMLElement>('main')!;
+  const card = leftSlug && document.querySelector<HTMLElement>(`a.card[href="/work/${leftSlug}/"]`);
+  main.tabIndex = -1;
+  (card || main).focus({ preventScroll: true });
+});

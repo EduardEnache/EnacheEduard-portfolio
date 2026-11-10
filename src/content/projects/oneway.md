@@ -8,7 +8,7 @@ live: oneway
 numbers:
   - { value: 0, label: "network requests during analysis" }
   - { value: 0, label: "build steps: plain files, nginx" }
-  - { value: 20, suffix: " bytes", label: "per account in a saved snapshot" }
+  - { value: 20, label: "bytes per account in a saved snapshot" }
   - { value: 8, label: "anonymous event names, demo" }
 stack:
   - { group: Frontend, items: ["Vanilla JS (ES modules)", CSS, "Browser DecompressionStream"] }

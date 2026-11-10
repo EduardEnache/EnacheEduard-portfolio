@@ -32,6 +32,7 @@ p { max-width: var(--measure); }
 a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 0.2em; transition: color var(--dur-ui) var(--ease-tide); }
 a:hover { color: var(--accent-text); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+main[tabindex="-1"]:focus-visible { outline: none; } /* programmatic focus after navigation */
 
 .skip-link { position: absolute; left: var(--margin); top: -100px; z-index: 100; background: var(--accent); color: var(--water-900); padding: var(--space-1) var(--space-2); }
 .skip-link:focus { top: var(--space-1); }
