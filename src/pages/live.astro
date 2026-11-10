@@ -2,10 +2,18 @@
 import Base from '../layouts/Base.astro';
 
 // Static fallbacks (last known values). Replaced at runtime when PUBLIC_API_BASE answers.
-const blocks = [
-  { title: 'Homelab health', path: '/health', rows: [['Stacks running', 'stacks', 'n/a'], ['Uptime', 'uptime', 'n/a']] },
-  { title: 'AnunțulCasei', path: '/anuntulcasei', rows: [['Active listings', 'listings', '~122k'], ['Unique properties', 'properties', '~67k']] },
-  { title: 'Minecraft', path: '/minecraft', rows: [['Players online', 'online', 'n/a'], ['Deaths on the board', 'deaths', 'n/a']] },
+// Row: [label, API field, fallback, format, total field for "x of y"]
+type Row = [string, string, string, string?, string?];
+const blocks: { title: string; key: string; rows: Row[] }[] = [
+  { title: 'Homelab health', key: 'health', rows: [
+    ['Stacks running', 'stacks', 'n/a'], ['Containers', 'containers', 'n/a'], ['Uptime', 'uptime_days', 'n/a', 'days'],
+    ['CPU', 'cpu_pct', 'n/a', 'pct'], ['Memory', 'mem_pct', 'n/a', 'pct'], ['Disk', 'disk_pct', 'n/a', 'pct'] ] },
+  { title: 'AnunțulCasei', key: 'anuntulcasei', rows: [
+    ['Active listings', 'listings', '~122k'], ['Unique properties', 'properties', '~67k'], ['New in 24 hours', 'new_24h', 'n/a'],
+    ['Portals healthy', 'portals_healthy', 'n/a', 'of', 'portals'] ] },
+  { title: 'Minecraft', key: 'minecraft', rows: [
+    ['Server', 'online', 'n/a', 'bool'], ['Version', 'version', 'n/a'], ['Players online', 'players_online', 'n/a'],
+    ['Slots', 'players_max', 'n/a'], ['Who is on', 'players', 'n/a', 'list'] ] },
 ];
 ---
 <Base title="Live | Eduard Enache" description="Live numbers from the services Eduard runs on his homelab.">
@@ -13,12 +21,21 @@ const blocks = [
     <h1>Live</h1>
     <p>Numbers from the services I run at home. When the connection is down you see the last known values.</p>
     {blocks.map((b) => (
-      <section class="block" data-live={b.path} data-state="offline" data-scene="live-block">
+      <section class="block" data-live={b.key} data-state="offline" data-scene="live-block">
         <h2>{b.title}</h2>
         <p class="mono" data-status>Offline, showing last known values</p>
         <dl>
-          {b.rows.map(([label, key, fallback]) => (<div><dt class="mono">{label}</dt><dd data-field={key}>{fallback}</dd></div>))}
+          {b.rows.map(([label, key, fallback, fmt, of]) => (<div><dt class="mono">{label}</dt><dd data-field={key} data-fmt={fmt} data-of={of}>{fallback}</dd></div>))}
         </dl>
+        {b.key === 'anuntulcasei' && <p class="mono"><time data-field="last_crawl_at" data-fmt="ago">last crawl: n/a</time></p>}
+        {b.key === 'minecraft' && (
+          <div>
+            <h3>Deaths this season</h3>
+            <ol data-board hidden></ol>
+            <p data-empty hidden>No stats yet: nobody has died this season.</p>
+            <p><a data-bluemap hidden class="btn" rel="noopener">Open the live map</a></p>
+          </div>
+        )}
       </section>
     ))}
   </div>
@@ -34,5 +51,7 @@ const blocks = [
   .block { margin-top: var(--space-5); border-top: 1px solid var(--accent); padding-top: var(--space-3); }
   h2 { font-size: var(--fs-lg); margin-bottom: var(--space-1); }
   dl { display: flex; flex-wrap: wrap; gap: var(--space-4); margin-top: var(--space-3); }
+  [hidden] { display: none !important; }
+  h3 { font-size: var(--fs-md); margin: var(--space-3) 0 var(--space-1); }
   dd { font-family: var(--font-mono); font-size: var(--fs-lg); }
 </style>

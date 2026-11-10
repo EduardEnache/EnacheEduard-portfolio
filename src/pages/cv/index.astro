@@ -2,21 +2,26 @@
 import { getEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { site } from '../../data/site';
+import '../../styles/print.css';
 
 const cv = (await getEntry('cv', 'cv'))!.data;
 ---
 <Base title="CV | Eduard Enache" description="Experience, education, skills and certifications of Eduard Enache.">
   <div class="wrap section" data-scene="cv">
     <header>
-      <h1>CV</h1>
-      <p><a class="btn btn-primary" href={site.cvPdf}>Download CV</a></p>
+      <h1><span class="no-print">CV</span><span class="print-only">Eduard Enache</span></h1>
+      <p class="print-only">Bucharest, Romania | Contact: eduardenache.ro/contact | linkedin.com/in/eduard-florentin-enache | github.com/EduardEnache</p>
+      <p class="no-print"><a class="btn btn-primary" href={site.cvPdf}>Download CV</a></p>
+      <p class="summary">{cv.summary}</p>
     </header>
 
     <section data-scene="cv-timeline" aria-labelledby="exp">
       <h2 id="exp">Experience</h2>
       <ol class="timeline">
         {cv.roles.map((r) => (
-          <li><span class="mono">{r.start} to {r.end}</span><h3>{r.title}</h3><p>{r.org}{r.place && `, ${r.place}`}</p></li>
+          <li><span class="mono">{r.start} to {r.end}</span><h3>{r.title}</h3><p>{r.org}{r.place && `, ${r.place}`}</p>
+            {r.bullets.length > 0 && <ul class="bullets">{r.bullets.map((b) => <li>{b}</li>)}</ul>}
+            {r.tools && <p class="mono tools">Tools: {r.tools}</p>}</li>
         ))}
       </ol>
     </section>
@@ -30,6 +35,13 @@ const cv = (await getEntry('cv', 'cv'))!.data;
       </ol>
     </section>
 
+    {cv.homelab.length > 0 && (
+      <section data-scene="cv-homelab" aria-labelledby="lab">
+        <h2 id="lab">Home lab</h2>
+        <ul class="bullets">{cv.homelab.map((b) => <li>{b}</li>)}</ul>
+      </section>
+    )}
+
     <section data-scene="cv-skills" aria-labelledby="skills">
       <h2 id="skills">Skills</h2>
       <dl class="skills">
@@ -40,12 +52,17 @@ const cv = (await getEntry('cv', 'cv'))!.data;
     <section data-scene="cv-certs" aria-labelledby="certs">
       <h2 id="certs">Certifications</h2>
       <ul class="certs">{cv.certifications.map((c) => <li>{c}</li>)}</ul>
+      {cv.workshops.length > 0 && <p class="workshops"><span class="mono">Summits and workshops</span><br />{cv.workshops.join(', ')}</p>}
       <p class="mono">{cv.languages.map((l) => `${l.name}: ${l.level}`).join(' / ')}</p>
     </section>
   </div>
 </Base>
 
 <style>
+  .summary { margin-top: var(--space-3); max-width: 68ch; }
+  .bullets { margin-top: var(--space-1); display: grid; gap: 6px; max-width: 68ch; padding-left: 1.1em; list-style: disc; }
+  .tools { margin-top: var(--space-1); }
+  .workshops { margin-bottom: var(--space-2); }
   .wrap > * + * { margin-top: var(--space-5); }
   header p { margin-top: var(--space-3); }
   h2 { font-size: var(--fs-xl); margin-bottom: var(--space-3); }

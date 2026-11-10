@@ -20,10 +20,13 @@ const projects = defineCollection({
 const cv = defineCollection({
   loader: file('./src/content/cv.json'),
   schema: z.object({
-    roles: z.array(z.object({ title: z.string(), org: z.string(), place: z.string().optional(), start: z.string(), end: z.string() })),
+    summary: z.string(),
+    roles: z.array(z.object({ title: z.string(), org: z.string(), place: z.string().optional(), start: z.string(), end: z.string(), bullets: z.array(z.string()).default([]), tools: z.string().optional() })),
     education: z.array(z.object({ title: z.string(), org: z.string(), start: z.string(), end: z.string(), detail: z.string().optional() })),
     skills: z.array(z.object({ group: z.string(), items: z.array(z.string()) })),
     certifications: z.array(z.string()),
+    workshops: z.array(z.string()).default([]),
+    homelab: z.array(z.string()).default([]),
     languages: z.array(z.object({ name: z.string(), level: z.string() })),
   }),
 });

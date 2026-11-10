@@ -2,26 +2,185 @@
   {
     "id": "cv",
     "roles": [
-      { "title": "QA Engineer", "org": "Orange Services", "place": "Bucharest", "start": "May 2025", "end": "Present" },
-      { "title": "Front Office Engineer (SSPO)", "org": "Orange Services", "place": "Bucharest", "start": "Oct 2023", "end": "May 2025" },
-      { "title": "Customer Support Specialist", "org": "Majorel (Bolt UK)", "place": "Remote", "start": "Aug 2021", "end": "Sep 2022" }
+      {
+        "title": "QA Engineer",
+        "org": "Orange Services",
+        "place": "Bucharest",
+        "start": "May 2025",
+        "end": "Present",
+        "bullets": [
+          "Automated cross-source reporting and dashboards in Power BI and Grafana, pulling from SQL/MySQL, MongoDB, CSV/Excel and REST APIs.",
+          "Automated OLA breach notifications, ticket completion tracking and 2-hour incident reports, improving accuracy and cutting manual effort.",
+          "Defined the KPI/OLA catalog and built DAX measures and time-intelligence logic for standardized, accurate client-facing reporting.",
+          "Added data validation and anomaly checks that made reporting outputs more consistent and reliable.",
+          "Worked with the NSSO and Problem Management teams on corrective actions and better KPI attainment.",
+          "Worked with IT security teams to protect sensitive data and secure access to reporting platforms."
+        ],
+        "tools": "Power BI, Grafana, SQL, Python, MySQL, MongoDB, REST APIs, Git, Jira"
+      },
+      {
+        "title": "Front Office Engineer (SSPO)",
+        "org": "Orange Services",
+        "place": "Bucharest",
+        "start": "Oct 2023",
+        "end": "May 2025",
+        "bullets": [
+          "Primary point of contact for clients, managing the flow of technical incident information across channels so issues were resolved on time.",
+          "Introduced automation (email quality checks, ticket follow-up tracking) that reduced departmental workload and raised customer satisfaction.",
+          "Built internal dashboards from high-volume operational data to raise the department's quality of service.",
+          "Translated technical information for non-technical stakeholders across teams."
+        ]
+      },
+      {
+        "title": "Customer Support Specialist",
+        "org": "Majorel (Bolt UK)",
+        "place": "Remote",
+        "start": "Aug 2021",
+        "end": "Sep 2022",
+        "bullets": [
+          "Remote support for the Bolt UK project, resolving issues for customers and drivers.",
+          "Handled cases from minor inquiries to complex application and financial issues in a proprietary support system."
+        ]
+      }
     ],
     "education": [
-      { "title": "MSc Mobile Communications", "org": "POLITEHNICA Bucharest", "start": "2024", "end": "2026", "detail": "9.14/10. Thesis \"Multiple Access Techniques for 6G Systems (NOMA, RSMA, OAM)\", graded 10/10." },
-      { "title": "BEng Telecommunications and Communication Systems", "org": "POLITEHNICA Bucharest", "start": "2020", "end": "2024" }
+      {
+        "title": "MSc Mobile Communications",
+        "org": "POLITEHNICA Bucharest",
+        "start": "2024",
+        "end": "2026",
+        "detail": "GPA 9.14/10. Thesis: \"Multiple Access Techniques for 6G Systems (NOMA, RSMA, OAM)\", graded 10/10."
+      },
+      {
+        "title": "BEng Telecommunications and Communication Systems",
+        "org": "POLITEHNICA Bucharest",
+        "start": "2020",
+        "end": "2024",
+        "detail": "Specialization in Telecommunications Technologies and Systems."
+      }
     ],
     "skills": [
-      { "group": "Data and BI", "items": ["Power BI (Power Query, DAX)", "Grafana", "SQL", "Python", "ETL", "REST APIs"] },
-      { "group": "Databases", "items": ["PostgreSQL", "MySQL", "MongoDB", "SQLite"] },
-      { "group": "Infrastructure", "items": ["Ubuntu Server", "Proxmox", "systemd", "Bash", "Docker", "Compose", "Nginx"] },
-      { "group": "Observability and network", "items": ["Prometheus", "Loki", "Tailscale", "Cloudflare", "Azure"] },
-      { "group": "Tooling", "items": ["Git", "Jira"] },
-      { "group": "Languages", "items": ["JS/TS", "Java", "MATLAB", "Verilog", "C#", "C++"] }
+      {
+        "group": "BI and analytics",
+        "items": [
+          "Power BI (Power Query/M, DAX, Service)",
+          "Grafana"
+        ]
+      },
+      {
+        "group": "Data and engineering",
+        "items": [
+          "SQL",
+          "Python",
+          "ETL",
+          "REST APIs",
+          "Data modeling",
+          "Data quality rules"
+        ]
+      },
+      {
+        "group": "Databases",
+        "items": [
+          "MySQL",
+          "MongoDB",
+          "PostgreSQL",
+          "SQLite"
+        ]
+      },
+      {
+        "group": "Linux and systems",
+        "items": [
+          "Ubuntu Server",
+          "Proxmox VE",
+          "systemd",
+          "Bash",
+          "SSH"
+        ]
+      },
+      {
+        "group": "Containers and web",
+        "items": [
+          "Docker",
+          "Docker Compose",
+          "Nginx"
+        ]
+      },
+      {
+        "group": "Observability",
+        "items": [
+          "Prometheus",
+          "Grafana",
+          "Loki",
+          "Promtail",
+          "cAdvisor",
+          "node-exporter"
+        ]
+      },
+      {
+        "group": "Network and cloud",
+        "items": [
+          "Tailscale",
+          "Cloudflare (Tunnel, Pages)",
+          "Microsoft Azure",
+          "Vercel",
+          "Render"
+        ]
+      },
+      {
+        "group": "Tooling",
+        "items": [
+          "Git",
+          "GitHub",
+          "Jira"
+        ]
+      },
+      {
+        "group": "Programming",
+        "items": [
+          "Python",
+          "Bash",
+          "JavaScript/TypeScript",
+          "Java",
+          "MATLAB",
+          "Verilog",
+          "C#",
+          "C++"
+        ]
+      }
     ],
-    "certifications": ["Microsoft Azure AI", "AI Fluency", "Change Management", "Cloud Fundamentals", "MATLAB Onramp", "Cambridge English C2", "ECDL"],
+    "certifications": [
+      "Microsoft Azure AI: Implementations and Solutions using AI",
+      "AI Fluency: AI Capabilities and Limitations",
+      "Change Management: Dealing with Change",
+      "Cloud Fundamentals",
+      "MATLAB Onramp",
+      "Cambridge English Level 2 Certificate in ESOL International",
+      "ECDL"
+    ],
     "languages": [
-      { "name": "Romanian", "level": "Native" },
-      { "name": "English", "level": "Cambridge C2" }
+      {
+        "name": "Romanian",
+        "level": "Native"
+      },
+      {
+        "name": "English",
+        "level": "Native/bilingual, Cambridge C2"
+      }
+    ],
+    "summary": "Quality Assurance Engineer with hands-on expertise in automation, monitoring, SQL and BI reporting, backed by a background in wireless communications and infrastructure engineering. At Orange Services I build and maintain automated dashboards and reporting pipelines in Power BI, Grafana and SQL/MySQL/MongoDB, improving data quality and driving continuous improvement across teams.",
+    "workshops": [
+      "Future Summit: AI",
+      "RPA Developer Workshop",
+      "PRISME.AI Hackathon",
+      "Trainer for GenAI, Manager and Ops Programme (Orange)",
+      "Critical Thinking with AI",
+      "Prompt Engineering"
+    ],
+    "homelab": [
+      "Self-hosted home lab: a Proxmox hypervisor running an Ubuntu Server VM with a Docker Compose platform, hosting several self-built web applications, exposed securely through Tailscale and Cloudflare.",
+      "Monitoring and observability stack (Prometheus, Grafana, Loki/Promtail, cAdvisor, node-exporter) with a custom Python exporter for external service metrics.",
+      "Python watchdog on a systemd timer that detects unhealthy containers, crash loops, disk/memory pressure and failed units, alerts on Telegram and pings an external dead-man switch.",
+      "Weekly container updates with a health gate and automatic rollback; every service versioned in Git with secret scanning before each commit; scripted disaster-recovery rebuild."
     ]
   }
 ]

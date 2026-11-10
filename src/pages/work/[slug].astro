@@ -15,7 +15,9 @@ const { entry, next } = Astro.props;
 const { data } = entry;
 const { Content } = await render(entry);
 const images = import.meta.glob<ImageMetadata>('/design/assets/projects/*/*.webp', { eager: true, import: 'default' });
-const shots = data.screenshots.map((s) => ({ src: images[`/design/assets/projects/${s}`], name: s })).filter((s) => s.src);
+const shots = data.screenshots
+  .map((s) => { const [path, alt] = s.split(' | '); return { src: images[`/design/assets/projects/${path}`], alt: alt ?? `${data.title} screenshot` }; })
+  .filter((s) => s.src);
 ---
 <Base title={`${data.title} | Eduard Enache`} description={data.tagline}>
   <article class="wrap section" data-scene="project">
@@ -48,7 +50,7 @@ const shots = data.screenshots.map((s) => ({ src: images[`/design/assets/project
     {shots.length > 0 && (
       <section class="shots" data-scene="project-shots" aria-label="Screenshots">
         {shots.map((s) => (
-          <Image src={s.src} alt={`${data.title} screenshot`} widths={[560, 1000, 1600]} sizes="(max-width: 700px) 100vw, 45vw" loading="lazy" />
+          <Image src={s.src} alt={s.alt} widths={[560, 1000, 1600]} sizes="(max-width: 700px) 100vw, 45vw" loading="lazy" />
         ))}
       </section>
     )}
