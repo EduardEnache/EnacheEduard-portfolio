@@ -1,13 +1,13 @@
-import { site } from '../data/site';
+const apiBase: string = import.meta.env.PUBLIC_API_BASE ?? ''; // not `site`: that object holds the email and must stay out of client chunks
 
 type Data = Record<string, unknown>;
 const NA = 'not available yet';
 
 /** One request to `${PUBLIC_API_BASE}/all`; null when unset, slow or failing (the static fallback then stays). */
 export async function fetchLive(timeoutMs = 4000): Promise<Record<string, Data | null> | null> {
-  if (!site.apiBase) return null;
+  if (!apiBase) return null;
   try {
-    const res = await fetch(site.apiBase.replace(/\/$/, '') + '/all', { signal: AbortSignal.timeout(timeoutMs) });
+    const res = await fetch(apiBase.replace(/\/$/, '') + '/all', { signal: AbortSignal.timeout(timeoutMs) });
     return res.ok ? await res.json() : null;
   } catch {
     return null;

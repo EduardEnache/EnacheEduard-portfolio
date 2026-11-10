@@ -34,7 +34,7 @@ a:hover { color: var(--accent-text); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 main[tabindex="-1"]:focus-visible { outline: none; } /* programmatic focus after navigation */
 
-.skip-link { position: absolute; left: var(--margin); top: -100px; z-index: 100; background: var(--accent); color: var(--water-900); padding: var(--space-1) var(--space-2); }
+.skip-link { position: absolute; left: var(--margin); top: -100px; z-index: 100; background: var(--accent); color: var(--water-900); padding: var(--space-1) var(--space-2); min-height: 44px; display: inline-flex; align-items: center; }
 .skip-link:focus { top: var(--space-1); }
 
 /* Grounds: flat bands that only remap the semantic aliases */

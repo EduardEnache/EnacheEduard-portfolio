@@ -44,6 +44,47 @@ screenshots:
   - "anuntulcasei/home-1440.webp | AnunțulCasei home page on desktop: the headline 'all for-sale listings in one place' beside an example feed of new Bucharest listings with prices and source tags (STO, OLX, P24)"
   - "anuntulcasei/sources-alerts-1440.webp | AnunțulCasei home page on desktop: live counters for active listings and new listings today, the seven tracked portals, and an example Telegram alert with price, area and links to the original listing"
   - "anuntulcasei/home-390.webp | AnunțulCasei home page on a phone: headline, call-to-action buttons and the feed of new listings stacked in one column"
+flow:
+  title: "Seven crawlers in, one searchable record out"
+  intro: "Each portal has its own polite crawler. Everything lands in one format, is matched against what is already known, and is served from one database and one search index."
+  stages:
+    - label: Crawl
+      nodes:
+        - { id: olx, label: OLX, kind: source }
+        - { id: storia, label: Storia, kind: source }
+        - { id: publi24, label: Publi24, kind: source }
+        - { id: anuntul, label: Anunțul Telefonic, kind: source }
+        - { id: homezz, label: homezz, kind: source }
+        - { id: lajumate, label: lajumate, kind: source }
+        - { id: romimo, label: romimo, kind: source }
+    - label: Normalise
+      nodes:
+        - { id: dedup, label: Validation and dedup, note: "One format, raw payload kept; duplicates matched", kind: process }
+    - label: Store
+      nodes:
+        - { id: pg, label: PostgreSQL + PostGIS, note: "One record per property", kind: store }
+        - { id: search, label: Meilisearch, note: "Search index", kind: store }
+    - label: Serve
+      nodes:
+        - { id: api, label: API, note: "FastAPI", kind: process }
+        - { id: alerts, label: Alert worker, note: "Matches saved searches, sends Telegram or push", kind: output }
+    - label: Use
+      nodes:
+        - { id: web, label: Web app, note: "Search, map and saved searches", kind: output }
+  edges:
+    - { from: olx, to: dedup }
+    - { from: storia, to: dedup }
+    - { from: publi24, to: dedup }
+    - { from: anuntul, to: dedup }
+    - { from: homezz, to: dedup }
+    - { from: lajumate, to: dedup }
+    - { from: romimo, to: dedup }
+    - { from: dedup, to: pg, main: true }
+    - { from: dedup, to: search }
+    - { from: pg, to: api, main: true }
+    - { from: search, to: api }
+    - { from: pg, to: alerts, label: "new and cheaper listings" }
+    - { from: api, to: web, main: true }
 ---
 AnunțulCasei pulls listings from seven Romanian portals, deduplicates them into one property record and lets people
 search Bucharest and Ilfov in one place. Saved searches send alerts when something new matches.

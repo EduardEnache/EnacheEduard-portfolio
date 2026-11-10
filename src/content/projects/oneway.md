@@ -11,7 +11,7 @@ numbers:
   - { value: 20, label: "bytes per account in a saved snapshot" }
   - { value: 8, label: "anonymous event names, demo" }
 stack:
-  - { group: Frontend, items: ["Vanilla JS (ES modules)", CSS, "Browser DecompressionStream"] }
+  - { group: Frontend, items: ["Vanilla JS (ES modules)", CSS, "Built-in browser decompression"] }
   - { group: Delivery, items: [nginx, Docker, "Cloudflare Pages (public demo)"] }
   - { group: Quality, items: ["In-browser test runner", "Strict CSP"] }
 facts:
@@ -37,6 +37,38 @@ screenshots:
   - "oneway/landing.webp | ONE·WAY landing screen in dark mode: a drop zone for the Instagram export, a note that it runs in this tab with no upload, and four steps to request the export"
   - "oneway/dashboard.webp | ONE·WAY dashboard: follower and following counts, a followers-over-time chart and a breakdown of mutuals, non-followers and fans,"
   - "oneway/non-followers.webp | ONE·WAY non-followers list in light mode: a searchable table of accounts with the date each was followed, using scrambled sample names"
+flow:
+  title: "Your export never leaves the tab"
+  intro: "Every step runs in the browser. The page's content security policy blocks outgoing requests, so the server only ever sends static files."
+  stages:
+    - label: Drop
+      nodes:
+        - { id: zip, label: Instagram export, note: "The zip, dropped on the page", kind: source }
+        - { id: older, label: Earlier export, note: "Optional, for changes over time", kind: source }
+    - label: Unpack
+      nodes:
+        - { id: unzip, label: Decompress, note: "Built-in browser decompression", kind: process }
+    - label: Parse
+      nodes:
+        - { id: parse, label: Read the JSON, note: "Plain JavaScript, checked by an in-browser test suite", kind: process }
+    - label: Analyse
+      nodes:
+        - { id: graph, label: Follow graph, note: "Who follows whom, plus likely renames", kind: store }
+    - label: Read
+      nodes:
+        - { id: nonf, label: Non-followers, kind: output }
+        - { id: fans, label: Fans and mutuals, kind: output }
+        - { id: reqs, label: Requests and blocked, kind: output }
+        - { id: diff, label: Changes between exports, kind: output }
+  edges:
+    - { from: zip, to: unzip, main: true }
+    - { from: older, to: unzip }
+    - { from: unzip, to: parse, main: true }
+    - { from: parse, to: graph, main: true }
+    - { from: graph, to: nonf, main: true }
+    - { from: graph, to: fans }
+    - { from: graph, to: reqs }
+    - { from: graph, to: diff }
 ---
 ONE·WAY reads an Instagram data export and shows who does not follow back. Everything happens in the page: the content
 security policy sets `connect-src 'none'`, so the app cannot send your data anywhere even if it wanted to.

@@ -1,0 +1,57 @@
+---
+import { layoutFlow, flowSteps, type Layout } from './flow';
+import type { ProjectData } from './data';
+interface Props { data: ProjectData }
+const { data } = Astro.props;
+const flow = data.flow;
+const views = flow ? ([['h', layoutFlow(flow, 'h')], ['v', layoutFlow(flow, 'v')]] as [string, Layout][]) : [];
+const steps = flow ? flowSteps(flow) : [];
+const glyph: Record<string, string> = {
+  source: 'M-3.5 0a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0-7 0', // ring
+  process: 'M-3 -3h6v6h-6z', // square
+  store: 'M-4.5 0a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0-9 0M-4.5 1.2h9', // medallion: disc with its horizon
+  output: 'M-3 -3.5L3 0L-3 3.5z', // out
+};
+---
+{flow && (
+  <section class="p-flow wrap" aria-labelledby="flow-h">
+    <p class="mono">How it works</p>
+    <h2 id="flow-h" class="fl-title">{flow.title}</h2>
+    {flow.intro && <p class="fl-intro">{flow.intro}</p>}
+    <figure class="flow" data-scene="flow">
+      {views.map(([mode, L]) => (
+        <svg class={`fl-svg fl-${mode}`} viewBox={`0 0 ${L.w} ${L.h}`} aria-hidden="true" focusable="false" data-mode={mode}>
+          {L.stages.map((s, i) => (
+            <g class="fl-head" data-s={i}>
+              <text class="fl-stage" x={s.x} y={s.y}>{s.text}</text>
+              <line class="fl-rule" x1={s.ruleX} x2={s.ruleX + s.ruleW} y1={s.ruleY} y2={s.ruleY} />
+            </g>
+          ))}
+          {L.links.map((l) => (
+            <g class:list={['fl-edge', { main: l.main }]} data-from={l.from} data-to={l.to} data-s={l.stage}>
+              <title>{l.title}</title>
+              <path class="fl-line" d={l.d} pathLength="1" />
+              <path class="fl-arrow" d={l.head} />
+            </g>
+          ))}
+          {L.boxes.map((b) => (
+            <g class="fl-node" data-id={b.id} data-s={b.stage} data-kind={b.kind}>
+              <g class="fl-in">
+                <rect x={b.x} y={b.y} width={b.w} height={b.h} />
+                <path class="fl-glyph" d={glyph[b.kind]} transform={`translate(${b.x + b.w - 15} ${b.ly - 5})`} />
+                <text class="fl-label" x={b.x + 12} y={b.ly}>{b.label.map((t, i) => <tspan x={b.x + 12} dy={i ? 19 : 0}>{t}</tspan>)}</text>
+                {b.note.length > 0 && <text class="fl-note" x={b.x + 12} y={b.ny}>{b.note.map((t, i) => <tspan x={b.x + 12} dy={i ? 16 : 0}>{t}</tspan>)}</text>}
+              </g>
+            </g>
+          ))}
+        </svg>
+      ))}
+      <figcaption class="sr">
+        <p>The same flow as a list, in order.</p>
+        <ol>
+          {steps.map((s) => <li>{s.stage}: {s.label}.{s.note ? ` ${s.note.replace(/\.$/, '')}.` : ''}{s.to.length ? ` Goes to ${s.to.join(', ')}.` : ' End of the path.'}</li>)}
+        </ol>
+      </figcaption>
+    </figure>
+  </section>
+)}

@@ -47,7 +47,8 @@ body:has(.hero) .site-header a:hover { color: var(--accent); }
 
 .hero .horizon {
   position: absolute; z-index: 3; left: 0; top: var(--hz); width: auto; height: 2px; margin: -1px 0 0;
-  right: calc(var(--pw) - 5vw - 70px); transform-origin: left;
+  right: calc(var(--pw) - 5vw); transform-origin: left; /* ends where the dither starts, fading out before it */
+  mask-image: linear-gradient(to right, #000 calc(100% - 90px), transparent);
 }
 .has-motion .hero .horizon { animation: draw-x var(--dur-scene) var(--ease-tide) both; }
 

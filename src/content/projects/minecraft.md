@@ -34,6 +34,36 @@ story:
     text: "Backups had grown to 99 GB, because each full archive included the rendered map. I switched to incremental snapshots, left the map render out, and the folder dropped to 4.6 GB. I restored a full world from a snapshot to prove it works, and snapshots now run every 6 hours and are kept for 7 days."
 screenshots:
   - "minecraft/bluemap.webp | The public BlueMap web map seen from above: forests, olive plateaus, rivers and a large bay, with a marker at the world spawn"
+flow:
+  title: "From the game log to the map and the feed"
+  intro: "The server itself stays plain vanilla+. A small sidecar reads what it writes and turns that into a feed, a leaderboard, a status and backups."
+  stages:
+    - label: Play
+      nodes:
+        - { id: server, label: Fabric server, note: "Vanilla+, server-side mods only", kind: source }
+    - label: Record
+      nodes:
+        - { id: log, label: Server log, kind: store }
+        - { id: world, label: World data, kind: store }
+    - label: Process
+      nodes:
+        - { id: sidecar, label: Python sidecar, note: "Tails the log; checks status with the game's list ping", kind: process }
+        - { id: bluemap, label: BlueMap render, kind: process }
+        - { id: backup, label: Incremental backups, note: "Every 6 hours, 7 days kept", kind: output }
+    - label: Publish
+      nodes:
+        - { id: tg, label: Telegram feed, note: "Joins and deaths", kind: output }
+        - { id: board, label: Leaderboard and status, note: "Read by the Live page of this site", kind: output }
+        - { id: map, label: Public map, kind: output }
+  edges:
+    - { from: server, to: log, main: true }
+    - { from: server, to: world }
+    - { from: log, to: sidecar, main: true }
+    - { from: world, to: bluemap }
+    - { from: world, to: backup }
+    - { from: sidecar, to: tg, main: true }
+    - { from: sidecar, to: board }
+    - { from: bluemap, to: map }
 ---
 A vanilla+ survival server for friends with a public BlueMap, a death leaderboard, a Telegram feed of server events and
 backups. Its live status and leaderboard are served from the homelab to the Live page of this site.

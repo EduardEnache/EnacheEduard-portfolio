@@ -4,12 +4,14 @@ import Base from '../../layouts/Base.astro';
 import ProjectHero from '../../components/project/ProjectHero.astro';
 import Numbers from '../../components/project/Numbers.astro';
 import Story from '../../components/project/Story.astro';
+import FlowMap from '../../components/project/FlowMap.astro';
 import Stack from '../../components/project/Stack.astro';
 import LiveStrip from '../../components/project/LiveStrip.astro';
 import Next from '../../components/project/Next.astro';
 import { dataOf } from '../../components/project/data';
 import { ditherCss } from '../../components/home/masks';
 import '../../components/project/project.css';
+import '../../components/project/flow.css';
 
 export async function getStaticPaths() {
   const all = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
@@ -38,6 +40,7 @@ const hasStory = (data.story?.length ?? 0) > 0;
         <div class="prose body"><Content /></div>
       </section>
     )}
+    <FlowMap data={data} />
     <Stack data={data} />
     <LiveStrip data={data} />
     <Next slug={next.id} title={next.data.title} order={next.data.order} />
@@ -47,6 +50,7 @@ const hasStory = (data.story?.length ?? 0) > 0;
 <script>
   import { later } from '../../scripts/idle';
   later(() => import('../../scripts/scenes/project'));
+  later(() => import('../../scripts/scenes/flow'));
 </script>
 
 <style>

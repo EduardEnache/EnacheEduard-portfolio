@@ -7,6 +7,7 @@ export interface Extra {
   numbers?: { value: number; prefix?: string; suffix?: string; label: string }[];
   story?: { label: string; title: string; text: string; shot?: string }[];
   live?: LiveKey;
+  flow?: import('./flow').Flow;
 }
 export type ProjectData = CollectionEntry<'projects'>['data'] & Extra;
 export const dataOf = (e: CollectionEntry<'projects'>) => e.data as ProjectData;

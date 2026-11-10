@@ -39,6 +39,38 @@ screenshots:
   - "copenhagen/calculator.webp | Calculator page in light mode: inputs for party size, card type, duration and activation time beside a pass status panel"
   - "copenhagen/itinerary-dark.webp | Itinerary page in dark mode: plan variant buttons, day tabs and a day timeline with a confirmed-flight notice and a warning"
   - "copenhagen/mobile.webp | Mobile itinerary view with the day header, plan variant chips and a bottom navigation bar"
+flow:
+  title: "Facts in, feasibility out"
+  intro: "Research is typed data with a source for every fact. The rules are pure functions over it, and the interface only displays their answers."
+  stages:
+    - label: Inputs
+      nodes:
+        - { id: facts, label: Research data, note: "Typed facts, each with a source link", kind: store }
+        - { id: trip, label: Trip inputs, note: "Party, card type, duration, activation time", kind: source }
+        - { id: variants, label: Itinerary variants, note: "Five, such as rainy day or low energy", kind: source }
+    - label: Rules
+      nodes:
+        - { id: expiry, label: Pass expiry and exclusivity, note: "Pure functions, no I/O", kind: process }
+        - { id: feasible, label: Feasibility, note: "Opening hours, one visit each, transit", kind: process }
+    - label: Check
+      nodes:
+        - { id: warn, label: Warning engine, note: "Flags visits outside hours and unverified facts", kind: process }
+    - label: Show
+      nodes:
+        - { id: ui, label: React interface, note: "Displays results only", kind: output }
+    - label: Offline
+      nodes:
+        - { id: pwa, label: Installable PWA, note: "Service worker keeps it working on roaming data", kind: output }
+  edges:
+    - { from: facts, to: expiry }
+    - { from: facts, to: feasible, main: true }
+    - { from: trip, to: expiry }
+    - { from: trip, to: feasible }
+    - { from: variants, to: feasible }
+    - { from: expiry, to: warn }
+    - { from: feasible, to: warn, main: true }
+    - { from: warn, to: ui, main: true }
+    - { from: ui, to: pwa, main: true }
 ---
 A trip planner for Copenhagen that works out which city card pays off for the attractions you actually plan to see.
 Retired after the trip.

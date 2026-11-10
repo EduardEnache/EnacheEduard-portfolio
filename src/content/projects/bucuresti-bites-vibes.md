@@ -28,5 +28,33 @@ story:
     title: "Sign-in and hosting without a cloud bill"
     text: "Login uses Google OAuth through NextAuth, and the map uses Google Maps keys. The whole thing runs as a Docker Compose stack behind nginx and a Cloudflare Tunnel, so nothing needs an open port at home. The README walks through every setup step, from OAuth credentials to the first database migration and seed."
 screenshots: []
+flow:
+  title: "Sign in, save a place, find it again"
+  intro: "A self-hosted, mobile-first app. Nothing needs an open port at home."
+  stages:
+    - label: Phone
+      nodes:
+        - { id: phone, label: Mobile browser, note: "Mobile-first interface", kind: source }
+    - label: Edge
+      nodes:
+        - { id: edge, label: Tunnel and web server, note: "No open port at home", kind: process }
+    - label: App
+      nodes:
+        - { id: app, label: Next.js app, note: "Route handlers; Google sign-in through NextAuth", kind: process }
+    - label: Data
+      nodes:
+        - { id: pg, label: PostgreSQL, note: "Venues, lists, four states, notes and ratings", kind: store }
+        - { id: places, label: Google Places, note: "Optional venue sync", kind: source }
+    - label: Use
+      nodes:
+        - { id: feed, label: Activity feed, note: "Every change is logged", kind: output }
+        - { id: map, label: Venue map, note: "Google Maps", kind: output }
+  edges:
+    - { from: phone, to: edge, main: true }
+    - { from: edge, to: app, main: true }
+    - { from: app, to: pg, main: true }
+    - { from: app, to: places, label: "venue sync" }
+    - { from: pg, to: feed, main: true }
+    - { from: pg, to: map }
 ---
 A mobile-first app for finding places to eat and hang out in Bucharest, with Google sign-in and Maps. Archived.

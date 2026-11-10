@@ -34,6 +34,34 @@ story:
     title: "A crash that changed the rules"
     text: "A test run that opened browsers without a limit filled memory and swap and froze the whole VM for about an hour. Since then every heavy workload runs under a memory cap, and containers have limits too. The box can be rebuilt from one bootstrap script and a written recovery guide, and every service is its own git repo with a changelog."
 screenshots: []
+flow:
+  title: "Watched every five minutes, updated every week"
+  intro: "Every service is a Docker Compose stack. One loop watches them, another updates them, and both end in a message to me or an automatic undo."
+  stages:
+    - label: Run
+      nodes:
+        - { id: registry, label: Service registry, note: "What should be running", kind: store }
+        - { id: stacks, label: Compose stacks, note: "One stack and one git repo per service", kind: store }
+    - label: Check
+      nodes:
+        - { id: watchdog, label: Watchdog, note: "Every 5 minutes: containers, disk, memory, failed units, pending reboot", kind: process }
+        - { id: updater, label: Weekly updater, note: "Tags a rollback point, pulls, rebuilds", kind: process }
+    - label: Decide
+      nodes:
+        - { id: telegram, label: Telegram alert, note: "Only when the state changes", kind: output }
+        - { id: deadman, label: Dead-man switch, note: "An outside service expects a ping on every run", kind: output }
+        - { id: gate, label: Health gate, note: "Every container healthy within 3 minutes", kind: process }
+    - label: Recover
+      nodes:
+        - { id: rollback, label: Automatic rollback, note: "Old images restored, stack recreated", kind: output }
+  edges:
+    - { from: stacks, to: watchdog, main: true }
+    - { from: registry, to: watchdog }
+    - { from: stacks, to: updater }
+    - { from: watchdog, to: telegram, main: true }
+    - { from: watchdog, to: deadman, label: "pings on every run" }
+    - { from: updater, to: gate, main: true }
+    - { from: gate, to: rollback, label: "if a container is not healthy" }
 ---
 A Proxmox host runs an Ubuntu VM that hosts every service as a Docker Compose stack. A watchdog checks the stacks every
 five minutes and sends Telegram alerts; a dead-man switch tells me if the watchdog itself stops.

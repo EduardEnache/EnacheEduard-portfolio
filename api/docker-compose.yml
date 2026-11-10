@@ -49,12 +49,12 @@ services:
       retries: 3
       start_period: 5s
     networks:
-      web: { ipv4_address: 172.29.0.10 }
+      web: { ipv4_address: "${WEB_IP}" }
 
 # Existing networks of the three read-only sources (names come from .env).
 networks:
   web: # fixed subnet so the API can trust x-real-ip from exactly the web container address
-    ipam: { config: [{ subnet: 172.29.0.0/24, gateway: 172.29.0.1 }] }
+    ipam: { config: [{ subnet: "${WEB_SUBNET}", gateway: "${WEB_GATEWAY}" }] }
   prom: { external: true, name: "${NET_PROMETHEUS}" }
   casata: { external: true, name: "${NET_CASATA}" }
   minecraft: { external: true, name: "${NET_MINECRAFT}" }

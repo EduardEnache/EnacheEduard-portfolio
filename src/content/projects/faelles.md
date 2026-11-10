@@ -37,6 +37,34 @@ screenshots:
   - "faelles/library.webp | fælles. library on a phone: a trip summary, a featured memory film, filter chips and a day section with a row of thumbnails above a bottom navigation bar"
   - "faelles/pin.webp | fælles. PIN screen: a welcome heading, four code boxes and a numeric keypad"
   - "faelles/who.webp | fælles. 'Who's this?' screen: four circular avatars with placeholder names to choose from"
+flow:
+  title: "From a phone to a shared album"
+  intro: "One container and one database file. Originals go in, and every phone in the group sees them arrive."
+  stages:
+    - label: Phone
+      nodes:
+        - { id: phone, label: Pick photos and videos, note: "Opened with a link and a four-digit PIN, no accounts", kind: source }
+    - label: Upload
+      nodes:
+        - { id: tus, label: Resumable upload, note: "Continues after a dropped connection", kind: process }
+    - label: Process
+      nodes:
+        - { id: media, label: Media processing, note: "Queued; reads capture time and GPS, makes previews", kind: process }
+    - label: Store
+      nodes:
+        - { id: store, label: SQLite file + storage folder, note: "Originals untouched", kind: store }
+    - label: Show
+      nodes:
+        - { id: sse, label: Live updates, note: "Server-sent events to every phone", kind: output }
+        - { id: map, label: Map, note: "Photos grouped by where they were taken", kind: output }
+        - { id: lib, label: Library, note: "By day, full-size originals", kind: output }
+  edges:
+    - { from: phone, to: tus, main: true }
+    - { from: tus, to: media, main: true }
+    - { from: media, to: store, main: true }
+    - { from: store, to: sse, main: true }
+    - { from: store, to: map }
+    - { from: store, to: lib }
 ---
 Built for a trip to Denmark: everyone uploads photos and videos, uploads resume after a dropped connection, and a map
 shows where each photo was taken. Retired after the trip.

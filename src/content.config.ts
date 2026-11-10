@@ -19,6 +19,16 @@ const projects = defineCollection({
     numbers: z.array(z.object({ value: z.number(), prefix: z.string().optional(), suffix: z.string().optional(), label: z.string() })).max(4).optional(),
     // 3-4 scenes; `shot` is "path | alt" and its path must be one of this entry's screenshots
     story: z.array(z.object({ label: z.string(), title: z.string(), text: z.string(), shot: z.string().optional() })).min(3).max(4).optional(),
+    // "How it works" flow map: stages left to right (top to bottom on phones); edges only point to a later stage. Generic role names only, never hosts, IPs, ports or people.
+    flow: z.object({
+      title: z.string(),
+      intro: z.string().optional(),
+      stages: z.array(z.object({
+        label: z.string(),
+        nodes: z.array(z.object({ id: z.string(), label: z.string(), note: z.string().optional(), kind: z.enum(['source', 'process', 'store', 'output']).optional() })).min(1),
+      })).min(3).max(6),
+      edges: z.array(z.object({ from: z.string(), to: z.string(), label: z.string().optional(), main: z.boolean().optional() })).min(3),
+    }).optional(),
     live: z.enum(['anuntulcasei', 'minecraft', 'health', 'monitoring', 'oneway', 'faelles', 'copenhagen-pass-maximizer', 'bucuresti-bites-vibes']).optional(),
   }).refine(
     (d) => (d.story ?? []).every((s) => !s.shot || d.screenshots.some((x) => x.split(' | ')[0].trim() === s.shot!.split(' | ')[0].trim())),

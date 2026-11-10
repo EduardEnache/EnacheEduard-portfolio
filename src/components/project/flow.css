@@ -1,0 +1,29 @@
+/* "How it works" flow map: one inline SVG per layout (stages as columns on wide screens, as rows on phones). The baseline is complete and static; flow.ts only adds the draw-in, the pulse and the hover highlight. */
+.p-flow { padding-block: var(--space-6) 0; }
+.fl-title { font-size: clamp(26px, 3.2vw, 48px); margin: var(--space-2) 0 0; max-width: 30ch; }
+.fl-intro { margin-top: var(--space-2); max-width: var(--measure); color: var(--muted); font-size: var(--fs-base); }
+.flow { --f-edge: var(--sky-500); --f-node: var(--water-400); margin: var(--space-4) 0 0; }
+.fl-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.fl-h { display: none; }
+.fl-v { max-width: 480px; }
+@media (min-width: 1100px) { .fl-h { display: block; } .fl-v { display: none; } }
+
+.fl-stage { font: 400 13px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; fill: var(--muted); }
+.fl-rule { stroke: var(--line); stroke-width: 1; }
+.fl-node rect { fill: var(--surface); stroke: var(--f-node); stroke-width: 1; transition: stroke var(--dur-ui) var(--ease-tide); }
+.fl-label { font: 500 15px var(--font-text); fill: var(--ink); }
+.fl-note { font: 400 13px var(--font-text); fill: var(--muted); }
+.fl-glyph { fill: none; stroke: var(--f-edge); stroke-width: 1.2; }
+.fl-node[data-kind=output] .fl-glyph { fill: var(--f-edge); }
+.fl-line, .fl-arrow { fill: none; stroke: var(--f-edge); stroke-width: 1.25; stroke-linecap: round; stroke-linejoin: round; transition: stroke var(--dur-ui) var(--ease-tide); }
+.fl-line { stroke-dasharray: 1 1; }
+.fl-edge.main .fl-line, .fl-edge.main .fl-arrow { stroke: var(--accent); stroke-width: 1.5; }
+.fl-dot { fill: var(--accent); pointer-events: none; }
+
+/* hover / tap: the node's own edges and neighbours stay lit, the rest dims */
+.fl-in, .fl-edge { transition: opacity var(--dur-ui) var(--ease-tide); }
+.fl-svg.is-hl .fl-node:not(.on) .fl-in { opacity: 0.28; }
+.fl-svg.is-hl .fl-edge:not(.on) { opacity: 0.16; }
+.fl-svg.is-hl .fl-edge.on .fl-line, .fl-svg.is-hl .fl-edge.on .fl-arrow { stroke: var(--accent); }
+.fl-svg.is-hl .fl-node.hot rect { stroke: var(--accent); }
+@media (prefers-reduced-motion: reduce) { .fl-in, .fl-edge, .fl-node rect, .fl-line, .fl-arrow { transition: none; } }
