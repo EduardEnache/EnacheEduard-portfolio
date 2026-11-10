@@ -1,8 +1,9 @@
 ---
 import { artFor, drawable } from './art';
 
-interface Props { slug: string; index: number; title: string; tagline: string; status: string; year: number }
-const { slug, index, title, tagline, status, year } = Astro.props;
+interface Props { slug: string; index: number; title: string; tagline: string; status: string; year: number; url?: string; flagship?: boolean }
+const { slug, index, title, tagline, status, year, url, flagship } = Astro.props;
+const host = url && new URL(url).host;
 const n = String(index + 1).padStart(2, '0');
 const art = artFor(slug);
 ---
@@ -13,6 +14,8 @@ const art = artFor(slug);
     data-name={title}
     data-desc={tagline}
     data-stat={`${status} / ${year}`}
+    data-site={url}
+    data-flagship={flagship ? '' : undefined}
   >
     <span class="in" aria-hidden="true">
       <span class={`fa t ${art.theme}`}>
@@ -26,4 +29,5 @@ const art = artFor(slug);
     </span>
     <span class="cap"><b>{title}</b><span>{tagline}</span><i>{status} / {year}</i></span>
   </a>
+  {url && <a class="site mono" href={url} target="_blank" rel="noopener">{host}</a>}
 </li>

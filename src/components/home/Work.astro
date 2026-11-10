@@ -5,6 +5,7 @@ import type { CollectionEntry } from 'astro:content';
 interface Props { projects: CollectionEntry<'projects'>[] }
 const { projects } = Astro.props;
 const first = projects[0];
+const site = (u: string) => new URL(u).host;
 ---
 <section id="work" class="work ground-water" data-scene="fan" aria-labelledby="work-title">
   <div class="fan-track">
@@ -22,7 +23,7 @@ const first = projects[0];
       <div class="fan-zone">
         <ol class="fan" aria-label="Projects">
           {projects.map((p, i) => (
-            <Card slug={p.id} index={i} title={p.data.title} tagline={p.data.tagline} status={p.data.status} year={p.data.year} />
+            <Card slug={p.id} index={i} title={p.data.title} tagline={p.data.tagline} status={p.data.status} year={p.data.year} url={p.data.url} flagship={p.data.flagship} />
           ))}
         </ol>
         <div class="hub">
@@ -30,6 +31,7 @@ const first = projects[0];
           <span class="mono h-idx" aria-hidden="true">01 / {String(projects.length).padStart(2, '0')}</span>
           <span class="h-name" aria-hidden="true">{first.data.title}</span>
           <span class="h-desc" aria-hidden="true">{first.data.tagline}</span>
+          <a class="h-site mono" href={first.data.url} target="_blank" rel="noopener" hidden={!first.data.url}>{first.data.url && site(first.data.url)}</a>
           <span class="mono h-stat" aria-hidden="true">{first.data.status} / {first.data.year}</span>
         </div>
       </div>

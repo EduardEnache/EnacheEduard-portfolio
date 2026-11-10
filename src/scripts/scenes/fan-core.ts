@@ -15,7 +15,7 @@ export function mountFan(root: HTMLElement): () => void {
   const spokes = [...root.querySelectorAll<HTMLElement>('.spoke')];
   const cards = spokes.map((s) => s.querySelector<HTMLElement>('.card')!);
   const ins = cards.map((c) => c.querySelector<HTMLElement>('.in')!);
-  const hub = { live: root.querySelector('.h-live')!, i: root.querySelector('.h-idx')!, n: root.querySelector('.h-name')!, d: root.querySelector('.h-desc')!, s: root.querySelector('.h-stat')! };
+  const hub = { live: root.querySelector('.h-live')!, i: root.querySelector('.h-idx')!, n: root.querySelector('.h-name')!, d: root.querySelector('.h-desc')!, s: root.querySelector('.h-stat')!, w: root.querySelector<HTMLAnchorElement>('.h-site')! };
   const N = cards.length;
   const step = cssNum('--fan-step', root);
   const limit = cssNum('--fan-limit', root);
@@ -33,8 +33,11 @@ export function mountFan(root: HTMLElement): () => void {
     hub.n.textContent = c.dataset.name ?? '';
     hub.d.textContent = c.dataset.desc ?? '';
     hub.s.textContent = c.dataset.stat ?? '';
+    const site = c.dataset.site;
+    hub.w.hidden = !site;
+    if (site) { hub.w.href = site; hub.w.textContent = new URL(site).host; }
     hub.live.textContent = `${c.dataset.name}. ${c.dataset.desc}. ${c.dataset.stat}`; // announced once per card
-    if (animate) gsap.fromTo([hub.n, hub.d, hub.s], { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: dur('ui'), stagger: stagger(), overwrite: true });
+    if (animate) gsap.fromTo([hub.n, hub.d, hub.w, hub.s], { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: dur('ui'), stagger: stagger(), overwrite: true });
   }
 
   /* per frame: only transform/opacity, only for cards that moved, cards outside the arc are hidden and left alone */

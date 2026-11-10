@@ -1,7 +1,7 @@
 ---
 import { Picture } from 'astro:assets';
 import { site } from '../../data/site';
-import portrait from '../../../design/assets/photo/eduard-lake-autumn.jpg';
+import portrait from '../../../design/assets/photo/eduard-lake-autumn-bokeh.jpg';
 
 const lines = site.name.split(' ');
 let n = 0;
@@ -15,10 +15,11 @@ let n = 0;
         alt="Eduard Enache in a grey coat by a lake on an overcast autumn day"
         formats={['avif', 'webp']}
         fallbackFormat="webp"
-        width={1080}
-        height={1440}
-        widths={[480, 720, 1080]}
-        sizes="(max-width: 700px) 100vw, 75vh"
+        width={1353}
+        height={1804}
+        widths={[480, 720, 1080, 1353]}
+        quality={88}
+        sizes="(max-width: 700px) min(100vw, 360px), min(77vh, 57vw)"
         loading="eager"
         fetchpriority="high"
         decoding="async"

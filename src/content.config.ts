@@ -11,6 +11,7 @@ const projects = defineCollection({
     status: z.enum(['live', 'retired', 'archived']),
     year: z.number(),
     url: z.url().optional(),
+    flagship: z.boolean().optional(),
     stack: z.array(z.object({ group: z.string(), items: z.array(z.string()) })),
     facts: z.array(z.object({ label: z.string(), value: z.string() })),
     // paths relative to design/assets/projects/, e.g. "oneway/landing.webp"

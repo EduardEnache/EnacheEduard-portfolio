@@ -5,6 +5,7 @@ tagline: "Seven property portals, one deduplicated search for Bucharest and Ilfo
 status: live
 year: 2026
 url: https://anuntulcasei.ro
+flagship: true
 stack:
   - { group: Backend, items: [FastAPI, SQLAlchemy, Alembic, "PostgreSQL + PostGIS", Redis, arq] }
   - { group: Search, items: [Meilisearch, imgproxy] }

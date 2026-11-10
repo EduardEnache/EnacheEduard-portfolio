@@ -38,6 +38,9 @@
 .card .cap span { font-size: 13px; line-height: 1.4; color: var(--sky-300); }
 .card .cap i { font-style: normal; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--haze-200); }
 .card:focus-visible .in { outline: 2px solid var(--accent); outline-offset: 3px; }
+.card[data-flagship] .in { border: 2px solid var(--accent); box-shadow: 0 0 22px color-mix(in srgb, var(--accent) 30%, transparent); } /* flagship: stays on at any rotation */
+.site { display: block; margin-top: 8px; color: var(--accent); }
+.site:focus-visible, .h-site:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .hub { display: none; }
 @media (hover: hover) { .card:hover .in { border-color: var(--accent); } }
 
@@ -76,6 +79,9 @@
 .hub .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .hub .h-idx, .hub .h-stat { color: var(--sky-300); }
 .hub .h-name { font-family: var(--font-display); font-weight: 800; font-variation-settings: 'wdth' 112; text-transform: uppercase; letter-spacing: -0.01em; line-height: 1; font-size: clamp(15px, 1.6vw, 22px); max-width: 20em; }
+.hub .h-site { color: var(--accent); pointer-events: auto; text-decoration: underline; text-underline-offset: 3px; }
+.hub .h-site[hidden] { display: none; }
+.has-motion .site { display: none; }
 .hub .h-desc { font-size: clamp(12px, 1vw, var(--fs-sm)); line-height: 1.4; color: var(--paper); max-width: 32ch; min-height: 2.8em; }
 
 @media (max-width: 700px) {
@@ -101,7 +107,7 @@
 @media (max-width: 700px), (max-height: 700px) { .has-motion .card .band { font-size: var(--fs-xs); } }
 @media (max-height: 500px) {
   .has-motion .hub { padding-bottom: 8px; }
-  .has-motion .hub .h-desc { display: none; }
+  .has-motion .hub .h-desc, .has-motion .hub .h-site { display: none; }
   .has-motion .work { --rh: clamp(72px, calc((100cqh - 92px) * 0.34), 230px); }
 }
 @media (prefers-reduced-motion: reduce) {
