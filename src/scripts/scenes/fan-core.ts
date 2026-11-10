@@ -3,7 +3,7 @@ import { gsap, ScrollTrigger } from '../motion';
 import { Draggable } from 'gsap/Draggable';
 import { maskUrls } from './dither';
 import { cssNum, dur } from './tokens';
-import { cameFrom } from './transitions';
+import { cameFrom, viaHistory } from './transitions';
 
 gsap.registerPlugin(Draggable);
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
@@ -70,7 +70,9 @@ export function mountFan(root: HTMLElement): () => void {
   });
   const st = tween.scrollTrigger!;
   const scrollToProgress = (p: number) => window.scrollTo({ top: st.start + clamp01(p) * (st.end - st.start), behavior: 'instant' });
-  if (first) { scrollToProgress(first / (N - 1)); ScrollTrigger.update(); st.getTween()?.progress(1); } // scroll and card agree, no smoothing run-up from card 1
+  /* browser Back/Forward: motion.ts restores the exact scroll; only a normal navigation ("All projects") snaps to the card */
+  const restored = viaHistory() && history.state?.scrollY > 0;
+  if (first) { if (!restored) scrollToProgress(first / (N - 1)); ScrollTrigger.update(); st.getTween()?.progress(1); } // scroll and card agree, no smoothing run-up from card 1
 
   /* drag rotates by driving the same scroll range; vertical gestures stay native (touch-action: pan-y) */
   let moved = false;

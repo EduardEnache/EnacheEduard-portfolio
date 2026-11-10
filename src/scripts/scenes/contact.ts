@@ -39,26 +39,29 @@ scene('contact-form', (form) => {
       fields.forEach((f) => touched.add(f));
       const bad = fields.filter((f) => !show(f));
       if (bad.length) { bad[0].focus(); return; }
-      if ((form.elements.namedItem('website') as HTMLInputElement).value) { form.dataset.state = 'sent'; form.querySelector<HTMLElement>('.done')!.hidden = false; return; } // honeypot: pretend, send nothing
+      if ((form.elements.namedItem('_honey') as HTMLInputElement).value) { form.dataset.state = 'sent'; form.querySelector<HTMLElement>('.done')!.hidden = false; return; } // honeypot: pretend, send nothing
       button.disabled = true; button.setAttribute('aria-busy', 'true'); button.textContent = 'Sending';
       say('Sending your message.');
       ctl = new AbortController();
       try {
-        const res = await fetch(form.action, {
+        const res = await fetch(form.dataset.ajax!, {
           method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, signal: AbortSignal.any([ctl.signal, AbortSignal.timeout(15000)]),
-          body: JSON.stringify(Object.fromEntries(fields.map((f) => [f.name, f.value.trim()]))),
+          body: JSON.stringify({ ...Object.fromEntries(fields.map((f) => [f.name, f.value.trim()])), _subject: 'Message from eduardenache.ro', _template: 'table', _captcha: 'false' }),
         });
-        if (!res.ok) throw new Error(String(res.status));
+        // FormSubmit answers {"success":"true"|"false","message":...}; "false" also comes back for a not-yet-activated address
+        const out = await res.json().catch(() => ({}));
+        if (!res.ok || String(out.success) !== 'true') throw new Error(String(res.status));
         form.dataset.state = 'sent';
         const done = form.querySelector<HTMLElement>('.done')!;
         done.hidden = false; done.focus();
       } catch (err) {
         if ((err as Error).name === 'AbortError' && ctl.signal.aborted) return;
-        say('Could not send. Your message is still here: try again in a moment.', 'failed');
-        button.disabled = false; button.removeAttribute('aria-busy'); button.textContent = 'Send again';
+        say(`Could not send. Your message is still here: try again, or write to ${form.dataset.email} directly.`, 'failed');
+        button.disabled = false; button.removeAttribute('aria-busy'); button.textContent = 'Send again'; button.focus(); // focus fell to <body> while the button was disabled
       }
     };
     form.addEventListener('submit', onSubmit);
+    if (new URLSearchParams(location.search).has('sent')) { form.dataset.state = 'sent'; form.querySelector<HTMLElement>('.done')!.hidden = false; } // back from a no-JS post
 
     return () => {
       ctl?.abort();

@@ -2,7 +2,9 @@
 import Base from '../layouts/Base.astro';
 import { site, phoneDisplay } from '../data/site';
 
-const endpoint = site.contactEndpoint;
+const endpoint = site.contactEndpoint; // FormSubmit AJAX URL (.../ajax/<email>)
+const plainAction = endpoint.replace('/ajax/', '/'); // no-JS fallback: a normal form POST, FormSubmit redirects to _next
+const next = new URL('/contact/?sent=1', Astro.site ?? Astro.url).href;
 const fields = [
   { id: 'name', label: 'Name', type: 'text', autocomplete: 'name' },
   { id: 'email', label: 'Email', type: 'email', autocomplete: 'email' },
@@ -17,12 +19,13 @@ const fields = [
       <h1>Contact</h1>
       <p>Write to me about roles, projects or anything you would like to build.</p>
       <ul class="links">
+        <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
         <li><a href={`tel:${site.phone}`}>{phoneDisplay}</a></li>
         <li><a href={site.linkedin} rel="me noopener">LinkedIn</a></li>
         <li><a href={site.github} rel="me noopener">GitHub</a></li>
       </ul>
     </div>
-    <form class="col" style="--s:7" data-scene="contact-form" data-live-form={endpoint ? '' : undefined} action={endpoint || undefined} method={endpoint ? 'post' : undefined}>
+    <form class="col" style="--s:7" data-scene="contact-form" data-live-form={endpoint ? '' : undefined} data-ajax={endpoint || undefined} data-email={site.email} action={plainAction || undefined} method={endpoint ? 'post' : undefined}>
       <fieldset disabled={!endpoint}>
         <legend class="sr">Message</legend>
         {fields.map((f, i) => (
@@ -37,7 +40,11 @@ const fields = [
           <textarea id="f-message" name="message" rows="5" required aria-describedby="e-message"></textarea>
           <p class="err" id="e-message" role="alert"></p>
         </div>
-        <p class="hp" aria-hidden="true"><label>Leave empty <input name="website" tabindex="-1" autocomplete="off" /></label></p>
+        <p class="hp" aria-hidden="true"><label>Leave empty <input name="_honey" tabindex="-1" autocomplete="off" /></label></p>
+        <input type="hidden" name="_subject" value="Message from eduardenache.ro" />
+        <input type="hidden" name="_template" value="table" />
+        <input type="hidden" name="_captcha" value="false" />
+        <input type="hidden" name="_next" value={next} />
       </fieldset>
       {endpoint ? (
         <div class="actions" style="--i:3">
@@ -45,7 +52,7 @@ const fields = [
           <p class="mono status" role="status" data-status></p>
         </div>
       ) : (
-        <p class="notice" style="--i:3"><strong>The form is not connected yet.</strong> Until it is, write to me on <a href={site.linkedin} rel="me noopener">LinkedIn</a> or <a href={site.github} rel="me noopener">GitHub</a>.</p>
+        <p class="notice" style="--i:3"><strong>The form is not connected yet.</strong> Until it is, write to <a href={`mailto:${site.email}`}>{site.email}</a> or find me on <a href={site.linkedin} rel="me noopener">LinkedIn</a> or <a href={site.github} rel="me noopener">GitHub</a>.</p>
       )}
       <div class="done" tabindex="-1" role="status" hidden>
         <h2>Sent</h2>
@@ -61,7 +68,7 @@ const fields = [
 </script>
 
 <style>
-  h1 { font-size: var(--fs-xl); margin-bottom: var(--space-3); }
+  h1 { font-size: min(var(--fs-xl), 14vw); margin-bottom: var(--space-3); }
   .links { margin-top: var(--space-3); border-top: 1px solid var(--line); max-width: 360px; }
   .links li { border-bottom: 1px solid var(--line); }
   .links a { display: flex; align-items: center; min-height: 56px; font-size: var(--fs-md); text-decoration: none; }

@@ -48,8 +48,12 @@ document.addEventListener('astro:after-swap', apply);
 let navigated = false, leftSlug = '';
 /** Slug of the project page we just came back from ('' otherwise): the fan starts on that card. */
 export const cameFrom = () => leftSlug;
+/** True when the page we are on was reached with browser Back/Forward (motion.ts then restores the saved scroll). */
+let traversed = false;
+export const viaHistory = () => traversed;
 document.addEventListener('astro:before-preparation', (e) => {
   navigated = true;
+  traversed = e.navigationType === 'traverse';
   leftSlug = e.to.pathname === '/' ? e.from.pathname.match(/^\/work\/([^/]+)/)?.[1] ?? '' : '';
   if (leftSlug) import('./fan-core'); // warm the chunk so the fan mounts before the new page is captured
 });

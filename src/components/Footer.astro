@@ -4,6 +4,8 @@ import { site } from '../data/site';
 <footer class="site-footer wrap ground-water" data-scene="footer">
   <p class="mono">{site.name} / {site.coordinates}</p>
   <ul>
+    <li class="phone"><a href="/cv/">CV</a></li>
+    <li class="phone"><a href="/live/">Live</a></li>
     <li><a href={site.linkedin} rel="me noopener">LinkedIn</a></li>
     <li><a href={site.github} rel="me noopener">GitHub</a></li>
     <li><a href="/contact/">Contact</a></li>
@@ -11,6 +13,8 @@ import { site } from '../data/site';
 </footer>
 <style>
   .site-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-2); padding-block: var(--space-4); border-top: 1px solid var(--accent); }
-  ul { display: flex; gap: var(--space-3); }
-  a { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--fs-sm); }
+  ul { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-3); }
+  .phone { display: none; } /* the header scrolls away: phones get the missing pages here */
+  @media (max-width: 700px) { .phone { display: block; } }
+  a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; font-size: var(--fs-sm); }
 </style>

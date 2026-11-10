@@ -66,7 +66,7 @@
   --ease-dither: steps(1, end); /* holds each Bayer level, flips at the next keyframe */
 
   /* Home scenes: geometry of the photo and the horizon, kinetic word axis range */
-  --portrait-horizon: 0.525; /* horizon height inside the portrait, as a share of its height */
+  --portrait-horizon: 0.38; /* horizon height inside the portrait, as a share of its height */
   --horizon-y: 0.52;         /* horizon height in the landing hero, as a share of its height */
   --wdth-min: 62;
   --wdth-max: 125;

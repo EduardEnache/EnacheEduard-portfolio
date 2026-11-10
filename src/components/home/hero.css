@@ -90,14 +90,17 @@ body:has(.hero) .site-header a:hover { color: var(--accent); }
 @supports (animation-timeline: view()) {
   .has-motion .strip .sl { animation: draw-x linear both; animation-timeline: view(); animation-range: entry 10% cover 35%; }
 }
+@keyframes draw-y { from { transform: scaleY(0); } }
+@keyframes mark-in { from { opacity: 0; transform: translateY(var(--space-2)); } }
+@keyframes square-in { from { transform: scale(0); } }
 
 @media (max-width: 700px) {
     .hero {
     --pt: 250px; --ph: 133.33vw; --hz: calc(var(--pt) + var(--ph) * var(--portrait-horizon));
-    --jn: calc(var(--pt) + var(--ph) * 0.66);
+    --jn: calc(var(--pt) + var(--ph) * 0.74); /* window on the photo: tall enough that the chin clears the bottom dither band */
     height: auto; padding: calc(var(--jn) + var(--space-2)) var(--margin) var(--space-3);
   }
-  .portrait { top: var(--pt); left: 0; right: auto; width: 100%; height: calc(var(--ph) * 0.66); overflow: hidden; }
+  .portrait { top: var(--pt); left: 0; right: auto; width: 100%; height: calc(var(--ph) * 0.74); overflow: hidden; }
   .shot { inset: auto 0 auto 0; top: 0; height: var(--ph); mask-image: none; }
   .portrait { mask-image: var(--m-top-phone), var(--m-bottom-phone), linear-gradient(black, black); mask-composite: add; mask-size: calc(var(--cell) * 8) var(--edge-top-phone), calc(var(--cell) * 8) var(--edge-bottom-phone), 100% calc(100% - var(--edge-top-phone) - var(--edge-bottom-phone)); mask-position: left top, left bottom, left var(--edge-top-phone); mask-repeat: repeat-x, repeat-x, no-repeat; }
   .hero .horizon { top: var(--jn); right: 0; }
@@ -113,3 +116,16 @@ body:has(.hero) .site-header a:hover { color: var(--accent); }
   .strip .sl { top: 0; bottom: 0; right: auto; width: 1.5px; height: auto; transform-origin: top; }
   .strip .fact::before { top: 0.45em; left: -34px; }
 }
+/* phones: the rail is vertical, so it draws downwards with the list's own scroll progress and each fact appears as the line reaches it */
+@media (max-width: 700px) {
+  @supports (animation-timeline: view()) {
+    .has-motion .strip .track { view-timeline: --rail block; }
+    .has-motion .strip .sl { animation: draw-y linear both; animation-timeline: --rail; animation-range: cover 13% cover 35%; }
+    .has-motion .strip .fact, .has-motion .strip .fact::before { animation: mark-in linear both; animation-timeline: --rail; }
+    .has-motion .strip .fact::before { animation-name: square-in; }
+    .has-motion .strip .fact:nth-child(2), .has-motion .strip .fact:nth-child(2)::before { animation-range: cover 12% cover 17%; }
+    .has-motion .strip .fact:nth-child(3), .has-motion .strip .fact:nth-child(3)::before { animation-range: cover 22% cover 27%; }
+    .has-motion .strip .fact:nth-child(4), .has-motion .strip .fact:nth-child(4)::before { animation-range: cover 32% cover 37%; }
+  }
+}
+@media (max-width: 359px) { .hero { --pt: 310px; } .above { top: 124px; } } /* the header wraps to two rows */

@@ -23,10 +23,10 @@ export const liveRows: Record<LiveKey, { title: string; rows: [string, string, s
   oneway: repoBlock('ONE·WAY', 'n/a'),
   faelles: repoBlock('fælles.', 'Retired'),
   'copenhagen-pass-maximizer': repoBlock('Copenhagen Pass Maximizer', 'Retired'),
-  'bucuresti-bites-vibes': repoBlock('București Bites & Vibes', 'Archived'),
+  'bucuresti-bites-vibes': repoBlock('București Bites & Vibes', 'Archived', false), // a single commit reads thin: no count row
 };
 
 /** Repo facts from the API; the service state falls back to what the project page already says. */
-function repoBlock(name: string, status: string) {
-  return { title: `Live from the ${name} repo`, rows: [['Commits', 'commits', 'n/a'], ['Last commit', 'last_commit_at', 'n/a', 'date'], ['Service', 'status', status, 'cap']] as [string, string, string, string?, string?][] };
+function repoBlock(name: string, status: string, commits = true) {
+  return { title: `Live from the ${name} repo`, rows: [...(commits ? [['Commits', 'commits', 'n/a']] : []), ['Last commit', 'last_commit_at', 'n/a', 'date'], ['Service', 'status', status, 'cap']] as [string, string, string, string?, string?][] };
 }

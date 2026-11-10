@@ -8,7 +8,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "cv:pdf": "node scripts/make-cv-pdf.mjs"
+    "cv:pdf": "node scripts/make-cv-pdf.mjs",
+    "build:csp": "node scripts/make-csp.mjs",
+    "deploy:local": "astro build && node scripts/make-csp.mjs && docker compose -f api/docker-compose.yml up -d --build && docker compose -f api/docker-compose.yml restart web"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

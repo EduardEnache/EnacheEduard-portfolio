@@ -24,22 +24,23 @@ export function createApp(cfg) {
   }
 
   function clientIp(req) {
-    if (cfg.trustProxy) {
-      const v = req.headers[cfg.proxyHeader];
-      if (typeof v === 'string' && v) return v.split(',').pop().trim().slice(0, 64); // rightmost = added by our one proxy
-    }
-    return req.socket.remoteAddress;
+    const peer = (req.socket.remoteAddress || '').replace(/^::ffff:/, '');
+    // x-real-ip is set (overwritten) by our nginx; honour it only when the TCP peer is that proxy, never from anyone else
+    const v = req.headers['x-real-ip'];
+    if (cfg.trustedProxy && peer === cfg.trustedProxy && typeof v === 'string' && v) return v.trim().slice(0, 64);
+    return peer;
   }
 
   function limited(ip) {
     const now = Date.now();
     if (hits.size > 10_000) for (const [k, v] of hits) if (v.reset < now) hits.delete(k);
+    if (hits.size > 10_000) hits.delete(hits.keys().next().value); // hard cap: still full of live entries, drop the oldest
     let h = hits.get(ip);
     if (!h || h.reset < now) hits.set(ip, (h = { n: 0, reset: now + WINDOW }));
     return ++h.n > LIMIT;
   }
 
-  return http.createServer(async (req, res) => {
+  const handle = async (req, res) => {
     const send = (code, body, extra = {}) => {
       res.writeHead(code, {
         'Content-Type': 'application/json; charset=utf-8',
@@ -78,5 +79,7 @@ export function createApp(cfg) {
       stale: got.length < parts.length || got.some((p) => p.stale),
       ...body,
     });
-  });
+  };
+  // last resort: a bug answers with a fixed body, never error text
+  return http.createServer((req, res) => handle(req, res).catch(() => { if (!res.headersSent) res.writeHead(500, { 'Content-Type': 'application/json' }); res.end('{"error":"internal error"}'); }));
 }

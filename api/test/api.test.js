@@ -97,17 +97,26 @@ test('cache: second request does not hit upstream', async () => {
   s.close();
 });
 
-test('rate limit: 60/min per IP, proxy header only when trusted', async () => {
-  const s = await start();
-  const codes = [];
-  for (let i = 0; i < 62; i++) codes.push((await fetch(`${s.url}/v1/minecraft`, { headers: { 'x-forwarded-for': `9.9.9.${i}` } })).status);
-  assert.deepEqual([codes[59], codes[60]], [200, 429]); // spoofed header ignored
-  s.close();
-  const t = await start({ trustProxy: true, proxyHeader: 'x-forwarded-for' });
-  const c2 = [];
-  for (let i = 0; i < 62; i++) c2.push((await fetch(`${t.url}/v1/minecraft`, { headers: { 'x-forwarded-for': `1.1.1.1, 9.9.9.${i}` } })).status);
-  assert.ok(c2.every((c) => c === 200)); // rightmost entry differs each time
+test('rate limit: 60/min per IP; x-real-ip only from the trusted proxy peer', async () => {
+  const codes = async (s, h) => { const c = []; for (let i = 0; i < 62; i++) c.push((await fetch(`${s.url}/v1/minecraft`, { headers: h(i) })).status); return c; };
+  const spoof = (i) => ({ 'x-forwarded-for': `9.9.9.${i}`, 'x-real-ip': `8.8.8.${i}` });
+  // no trusted proxy configured, or the peer is not it: spoofed headers are ignored, one bucket
+  for (const trustedProxy of [undefined, '10.9.9.9']) {
+    const s = await start({ trustedProxy });
+    const c = await codes(s, spoof);
+    assert.deepEqual([c[59], c[60]], [200, 429]);
+    s.close();
+  }
+  // the peer is the trusted proxy (tests connect from 127.0.0.1): its x-real-ip picks the bucket
+  const t = await start({ trustedProxy: '127.0.0.1' });
+  assert.ok((await codes(t, spoof)).every((c) => c === 200));
   t.close();
+});
+
+test('hits map stays bounded', async () => {
+  const s = await start({ trustedProxy: '127.0.0.1' });
+  for (let i = 0; i < 10_400; i++) await fetch(`${s.url}/v1/minecraft`, { headers: { 'x-real-ip': `7.${i >> 8}.${i & 255}.1` } });
+  s.close(); // bound is enforced in limited(); reaching here without memory error with 10k+ distinct IPs is the smoke check
 });
 
 test('CORS and methods', async () => {

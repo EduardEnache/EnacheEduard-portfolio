@@ -131,3 +131,4 @@ html[data-vt=open] .has-motion .p-frame .emblem .st * { animation: none; }
 @media (prefers-reduced-motion: reduce) {
   .live.pulse .dot::after { animation: none; }
 }
+@media (max-width: 700px) { .proj .band { font-size: var(--fs-xs); } }

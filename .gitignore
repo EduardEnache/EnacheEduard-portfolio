@@ -153,3 +153,4 @@ dist/
 .env.*
 !.env.example
 *.b64
+nginx/csp.inc

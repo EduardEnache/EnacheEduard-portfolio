@@ -1,4 +1,4 @@
-name: portfolio-api
+name: portfolio-api # one stack: the API and the nginx web tier in front of it
 
 services:
   api:
@@ -25,10 +25,36 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
-    networks: [prom, casata, minecraft]
+    networks: [prom, casata, minecraft, web]
+
+  web:
+    image: nginxinc/nginx-unprivileged:1.27-alpine
+    container_name: portfolio-web
+    restart: unless-stopped
+    depends_on: { api: { condition: service_healthy } }
+    ports:
+      - "127.0.0.1:${WEB_PORT:-8507}:8080"
+    volumes: # dist/ and the generated CSP are rebuilt on the host (`npm run deploy:local`)
+      - ../dist:/usr/share/nginx/html:ro
+      - ../nginx:/etc/nginx/conf.d:ro # a directory, so edits are seen after a restart (default.conf is the only *.conf)
+    tmpfs: [/tmp]
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 64m
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      web: { ipv4_address: 172.29.0.10 }
 
 # Existing networks of the three read-only sources (names come from .env).
 networks:
+  web: # fixed subnet so the API can trust x-real-ip from exactly the web container address
+    ipam: { config: [{ subnet: 172.29.0.0/24, gateway: 172.29.0.1 }] }
   prom: { external: true, name: "${NET_PROMETHEUS}" }
   casata: { external: true, name: "${NET_CASATA}" }
   minecraft: { external: true, name: "${NET_MINECRAFT}" }

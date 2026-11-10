@@ -86,6 +86,24 @@
   /* the width-axis squeeze re-lays out three huge text rows every frame; phones keep the roll only */
   .has-motion .kn .row { animation: none; --w: var(--wdth-max); }
 }
+/* short or narrow viewports: the title block takes its own space and the fan zone gets the rest, so cards are sized from the zone's height
+   (container units: tracks the Android toolbar showing or hiding) and can never reach the title. Desktop keeps the absolute layout above. */
+@media (max-width: 700px), (max-height: 700px) {
+  .has-motion .fan-stage { display: flex; flex-direction: column; }
+  .has-motion .work-top { position: relative; flex: none; padding-top: clamp(12px, 3.5svh, 48px); }
+  .has-motion .kn { font-size: min(10.4vw, 12.5svh, 100px); margin-top: clamp(8px, 2svh, 34px); }
+  .has-motion .fan-zone { position: relative; top: auto; flex: 1; min-height: 0; container-type: size; }
+  .has-motion .work {
+    --rh: clamp(112px, calc((100cqh - 92px) * 0.42), 230px);
+    --cw: min(calc((100cqh - 92px - var(--rh)) / 1.333), 66cqw);
+  }
+}
+@media (max-width: 700px), (max-height: 700px) { .has-motion .card .band { font-size: var(--fs-xs); } }
+@media (max-height: 500px) {
+  .has-motion .hub { padding-bottom: 8px; }
+  .has-motion .hub .h-desc { display: none; }
+  .has-motion .work { --rh: clamp(72px, calc((100cqh - 92px) * 0.34), 230px); }
+}
 @media (prefers-reduced-motion: reduce) {
   .has-motion .kn .col, .has-motion .kn .row, .has-motion .card.on .emblem .st * { animation: none; }
 }
