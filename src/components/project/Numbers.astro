@@ -1,0 +1,26 @@
+---
+import type { ProjectData } from './data';
+interface Props { data: ProjectData }
+const { data } = Astro.props;
+const fmt = (v: number) => v.toLocaleString('en');
+// graceful fallback: the plain facts when no numbers are defined
+const items = data.numbers?.length
+  ? data.numbers.map((x) => ({ label: x.label, text: `${x.prefix ?? ''}${fmt(x.value)}${x.suffix ?? ''}`, to: x.value, pre: x.prefix ?? '', suf: x.suffix ?? '' }))
+  : data.facts.map((f) => ({ label: f.label, text: f.value, to: undefined, pre: '', suf: '' }));
+---
+{items.length > 0 && (
+  <section class="p-nums wrap" aria-label="Key numbers">
+    <ul class="nums">
+      {items.map((x) => (
+        <li class="num-item">
+          <span class="mono">{x.label}</span>
+          {x.to !== undefined ? (
+            <><span class="sr">{x.text}</span><span class="n" aria-hidden="true" data-to={x.to} data-pre={x.pre} data-suf={x.suf}>{x.text}</span></>
+          ) : (
+            <span class="n str">{x.text}</span>
+          )}
+        </li>
+      ))}
+    </ul>
+  </section>
+)}

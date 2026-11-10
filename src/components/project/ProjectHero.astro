@@ -1,0 +1,39 @@
+---
+import { Image } from 'astro:assets';
+import { artFor, drawable } from '../home/art';
+import type { CardShot } from '../home/shots';
+import { longest, type ProjectData } from './data';
+
+interface Props { slug: string; data: ProjectData; total: number; shot?: CardShot }
+const { slug, data, total, shot } = Astro.props;
+const n = String(data.order).padStart(2, '0');
+const art = artFor(slug);
+const long = longest(data.title) > 8;
+---
+<header class="p-hero wrap">
+  <p class="mono crumbs"><a class="back" href="/#work">All projects</a><span>{n} / {String(total).padStart(2, '0')}</span></p>
+  <div class="p-grid">
+    <div class="p-copy">
+      <h1 class="p-title" style={`--len:${longest(data.title)};--k:${long ? 0.8 : 0.95};--st:${long ? '100%' : '125%'}`}>{data.title}</h1>
+      <p class="tagline">{data.tagline}</p>
+      <p class="mono meta">
+        <span>{data.status}</span><span>{data.year}</span>
+        {data.url && <a href={data.url} rel="noopener">{new URL(data.url).host}</a>}
+      </p>
+    </div>
+    <figure class="p-frame">
+      <span class="in">
+        {shot ? (
+          <Image src={shot.src} alt={shot.alt || `${data.title} screenshot`} widths={[640, 960, 1280]} sizes="(max-width: 700px) 100vw, 40vw" loading="eager" fetchpriority="high" transition:name={`shot-${slug}`} />
+        ) : (
+          <span class={`art t ${art.theme}`}>
+            <svg class="dr" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.2" set:html={drawable(art.svg)} />
+            <span class="num" aria-hidden="true">{n}</span>
+          </span>
+        )}
+        <span class="band"><span>{n}</span><span>{data.status}</span></span>
+      </span>
+    </figure>
+  </div>
+  <hr class="horizon p-line" />
+</header>

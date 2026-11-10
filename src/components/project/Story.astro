@@ -1,0 +1,31 @@
+---
+import { Image } from 'astro:assets';
+import { shotsOf } from '../home/shots';
+import type { ProjectData } from './data';
+
+interface Props { data: ProjectData }
+const { data } = Astro.props;
+const scenes = (data.story ?? []).map((s) => ({ ...s, shot: s.shot ? shotsOf([s.shot])[0] : undefined }));
+---
+{scenes.length > 0 && (
+  <section class="p-story wrap" aria-label="The story">
+    <div class="story">
+      <div class="rail" aria-hidden="true"></div>
+      {scenes.map((s, i) => (
+        <article class="scene">
+          <div class="txt">
+            <p class="mono">{String(i + 1).padStart(2, '0')} / {s.label}</p>
+            <h2>{s.title}</h2>
+            <p>{s.text}</p>
+          </div>
+          {s.shot && (
+            <figure class="shot">
+              <Image src={s.shot.src} alt={s.shot.alt || s.title} widths={[560, 960, 1280]} sizes="(max-width: 700px) 100vw, 45vw" loading="lazy" />
+              <span class="veil" aria-hidden="true"></span>
+            </figure>
+          )}
+        </article>
+      ))}
+    </div>
+  </section>
+)}

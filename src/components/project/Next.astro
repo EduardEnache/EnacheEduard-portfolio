@@ -1,0 +1,11 @@
+---
+import { longest } from './data';
+interface Props { slug: string; title: string; order: number }
+const { slug, title, order } = Astro.props;
+---
+<nav class="p-next wrap" aria-label="Next project">
+  <a href={`/work/${slug}/`} style={`--len:${longest(title)};--k:${longest(title) > 8 ? 0.8 : 0.95};--st:${longest(title) > 8 ? '100%' : '125%'}`}>
+    <span class="mono">Next project, {String(order).padStart(2, '0')}</span>
+    <span class="nt">{title}</span>
+  </a>
+</nav>

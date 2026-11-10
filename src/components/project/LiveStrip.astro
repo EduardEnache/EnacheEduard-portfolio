@@ -1,0 +1,18 @@
+---
+import { liveRows, type ProjectData } from './data';
+interface Props { data: ProjectData }
+const { data } = Astro.props;
+const block = data.live ? liveRows[data.live] : undefined;
+---
+{data.live && block && (
+  <section class="p-live wrap" aria-label={block.title}>
+    <div class="live" data-live={data.live} data-state="offline" data-scene="project-live">
+      <p class="mono live-head"><span class="dot" aria-hidden="true"></span><span>{block.title}</span><span data-status>Offline, showing last known values</span></p>
+      <dl class="live-rows">
+        {block.rows.map(([label, key, fallback, fmt, of]) => (
+          <div><dt class="mono">{label}</dt><dd data-field={key} data-fmt={fmt} data-of={of}>{fallback}</dd></div>
+        ))}
+      </dl>
+    </div>
+  </section>
+)}

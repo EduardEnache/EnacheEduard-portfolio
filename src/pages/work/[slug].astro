@@ -1,78 +1,57 @@
 ---
-import { Image } from 'astro:assets';
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import ProjectHero from '../../components/project/ProjectHero.astro';
+import Numbers from '../../components/project/Numbers.astro';
+import Story from '../../components/project/Story.astro';
+import Stack from '../../components/project/Stack.astro';
+import LiveStrip from '../../components/project/LiveStrip.astro';
+import Next from '../../components/project/Next.astro';
+import { dataOf } from '../../components/project/data';
+import { shotsOf } from '../../components/home/shots';
+import { ditherCss } from '../../components/home/masks';
+import '../../components/project/project.css';
 
 export async function getStaticPaths() {
   const all = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
   return all.map((entry, i) => ({
     params: { slug: entry.id },
-    props: { entry, next: all[(i + 1) % all.length] },
+    props: { entry, total: all.length, next: all[(i + 1) % all.length] },
   }));
 }
 
-const { entry, next } = Astro.props;
-const { data } = entry;
+const { entry, total, next } = Astro.props;
+const data = dataOf(entry);
 const { Content } = await render(entry);
-const images = import.meta.glob<ImageMetadata>('/design/assets/projects/*/*.webp', { eager: true, import: 'default' });
-const shots = data.screenshots
-  .map((s) => { const [path, alt] = s.split(' | '); return { src: images[`/design/assets/projects/${path}`], alt: alt ?? `${data.title} screenshot` }; })
-  .filter((s) => s.src);
+const shots = shotsOf(data.screenshots);
+const hasStory = (data.story?.length ?? 0) > 0;
 ---
-<Base title={`${data.title} | Eduard Enache`} description={data.tagline}>
-  <article class="wrap section" data-scene="project">
-    <header class="grid" data-scene="project-hero">
-      <div class="col" style="--e:10">
-        <p class="mono">{String(data.order).padStart(2, '0')} / {data.status} / {data.year}</p>
-        <h1>{data.title}</h1>
-        <p class="tagline">{data.tagline}</p>
-        {data.url && <p><a class="btn" href={data.url} rel="noopener">Visit {new URL(data.url).host}</a></p>}
-      </div>
-    </header>
-
-    <section class="grid" data-scene="project-facts" aria-label="Key facts">
-      <dl class="col facts" style="--e:8">
-        {data.facts.map((f) => (<div><dt class="mono">{f.label}</dt><dd>{f.value}</dd></div>))}
-      </dl>
-    </section>
-
-    <section class="grid" data-scene="project-body">
-      <div class="col prose" style="--e:8"><Content /></div>
-    </section>
-
-    <section class="grid" data-scene="project-stack" aria-labelledby="stack">
-      <div class="col" style="--e:8">
-        <h2 id="stack">Stack</h2>
-        {data.stack.map((g) => (<p><span class="mono">{g.group}</span><br />{g.items.join(', ')}</p>))}
-      </div>
-    </section>
-
-    {shots.length > 0 && (
-      <section class="shots" data-scene="project-shots" aria-label="Screenshots">
-        {shots.map((s) => (
-          <Image src={s.src} alt={s.alt} widths={[560, 1000, 1600]} sizes="(max-width: 700px) 100vw, 45vw" loading="lazy" />
-        ))}
+<Base title={`${data.title} | Eduard Enache`} description={data.tagline} ground="dark">
+  <div class="proj" data-scene="project">
+    <script is:inline data-astro-rerun>
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.currentScript.parentElement.classList.add('has-motion');
+    </script>
+    <style is:inline set:html={ditherCss()}></style>
+    <ProjectHero slug={entry.id} data={data} total={total} shot={shots[0]} />
+    <Numbers data={data} />
+    <Story data={data} />
+    {!hasStory && (
+      <section class="p-story wrap" aria-label="About this project">
+        <div class="prose body"><Content /></div>
       </section>
     )}
-
-    <nav class="next" data-scene="project-next" aria-label="Next project">
-      <hr class="horizon" />
-      <a href={`/work/${next.id}/`}><span class="mono">Next project</span><span class="title">{next.data.title}</span></a>
-    </nav>
-  </article>
+    <Stack data={data} />
+    <LiveStrip data={data} />
+    <Next slug={next.id} title={next.data.title} order={next.data.order} />
+  </div>
 </Base>
 
+<script>
+  import '../../scripts/scenes/project';
+</script>
+
 <style>
-  article > * + * { margin-top: var(--space-5); }
-  h1 { font-size: clamp(48px, 9vw, 128px); margin-block: var(--space-2); }
-  .tagline { font-size: var(--fs-md); line-height: 1.35; margin-bottom: var(--space-3); }
-  h2 { font-size: var(--fs-lg); margin-bottom: var(--space-2); }
-  .facts { display: grid; gap: var(--space-2); }
-  .facts div { border-top: 1px solid var(--line); padding-top: var(--space-1); }
-  .facts dd { font-size: var(--fs-md); }
-  .prose :global(p) + :global(p) { margin-top: var(--space-2); }
-  .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: var(--gutter); align-items: start; }
-  .shots img { width: 100%; border: 1px solid var(--line); }
-  .next a { display: block; padding-block: var(--space-3); text-decoration: none; }
-  .next .title { display: block; font-family: var(--font-display); font-stretch: 125%; font-weight: 800; text-transform: uppercase; font-size: var(--fs-xl); line-height: 1; }
+  .body { max-width: var(--measure); }
+  .body :global(p) + :global(p) { margin-top: var(--space-2); }
+  .body :global(p) { font-size: var(--fs-md); line-height: 1.45; }
 </style>

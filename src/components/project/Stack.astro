@@ -1,0 +1,15 @@
+---
+import type { ProjectData } from './data';
+interface Props { data: ProjectData }
+const { data } = Astro.props;
+---
+{data.stack.length > 0 && (
+  <section class="p-stack wrap" aria-labelledby="stack-h">
+    <p class="mono" id="stack-h">Stack, by layer</p>
+    <dl class="stack">
+      {data.stack.map((g) => (
+        <div class="row"><dt class="mono">{g.group}</dt><dd>{g.items.map((it, i) => <><span>{it}</span>{i < g.items.length - 1 && <i aria-hidden="true">/</i>}</>)}</dd></div>
+      ))}
+    </dl>
+  </section>
+)}
