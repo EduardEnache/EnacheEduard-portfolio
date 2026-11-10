@@ -4,6 +4,7 @@ title: "fælles."
 tagline: "A shared trip photo and video app with resumable uploads and a map."
 status: retired
 year: 2026
+live: faelles
 numbers:
   - { value: 146, label: "automated tests" }
   - { value: 2, label: "phone families tested" }

@@ -4,6 +4,7 @@ title: "ONE·WAY"
 tagline: "An Instagram follow-graph analyzer that runs entirely in your browser."
 status: live
 year: 2026
+live: oneway
 numbers:
   - { value: 0, label: "network requests during analysis" }
   - { value: 0, label: "build steps: plain files, nginx" }

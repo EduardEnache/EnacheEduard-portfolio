@@ -31,6 +31,8 @@ function format(el: HTMLElement, d: Data): string | null {
       const t = d[el.dataset.of!];
       return typeof v === 'number' && typeof t === 'number' ? `${v} of ${t}` : null;
     }
+    case 'date': return typeof v === 'string' && !isNaN(Date.parse(v)) ? new Date(v).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : null;
+    case 'cap': return typeof v === 'string' && v ? v[0].toUpperCase() + v.slice(1) : null;
     case 'bool': return typeof v === 'boolean' ? (v ? 'Online' : 'Offline') : null;
     case 'list': return Array.isArray(v) && v.length ? v.join(', ') : 'nobody right now';
     default: return typeof v === 'number' ? int(v) : typeof v === 'string' ? v : null;

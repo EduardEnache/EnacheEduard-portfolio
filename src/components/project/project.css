@@ -28,9 +28,12 @@
 .t { color: var(--paper); }
 .p-line { margin: 0; height: 1.5px; transform-origin: left; }
 .has-motion .p-line { animation: p-draw var(--dur-scene) var(--ease-tide) both; }
-.has-motion .p-title, .has-motion .p-copy .tagline, .has-motion .p-copy .meta { animation: p-up var(--dur-reveal) var(--ease-tide) both; animation-delay: calc(var(--dur-ui) * 0.5); }
-.has-motion .p-copy .tagline { animation-delay: calc(var(--dur-ui) * 0.5 + var(--stagger)); }
-.has-motion .p-copy .meta { animation-delay: calc(var(--dur-ui) * 0.5 + var(--stagger) * 2); }
+.has-motion .p-title, .has-motion .p-copy .tagline, .has-motion .p-copy .meta { animation: p-up var(--dur-reveal) var(--ease-tide) both; animation-delay: calc(var(--dur-ui) * 0.5 + var(--vt-lag, 0s)); }
+.has-motion .p-copy .tagline { animation-delay: calc(var(--dur-ui) * 0.5 + var(--stagger) + var(--vt-lag, 0s)); }
+.has-motion .p-copy .meta { animation-delay: calc(var(--dur-ui) * 0.5 + var(--stagger) * 2 + var(--vt-lag, 0s)); }
+html[data-vt=open] { --vt-lag: calc(var(--dur-ui) * 0.5); }
+/* the emblem arrives already drawn through the transition: no second draw */
+html[data-vt=open] .has-motion .p-frame .emblem .st * { animation: none; }
 .has-motion .p-frame .emblem .st * { stroke-dasharray: 1; animation: p-stroke var(--dur-scene) var(--ease-tide) both; animation-delay: calc(var(--dur-ui) * 0.5); }
 @keyframes p-draw { from { transform: scaleX(0); } }
 @keyframes p-up { from { opacity: 0; transform: translateY(var(--space-2)); } }

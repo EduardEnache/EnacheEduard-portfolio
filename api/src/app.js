@@ -2,7 +2,11 @@ import http from 'node:http';
 import * as src from './sources.js';
 
 const TTL = 45_000, LIMIT = 60, WINDOW = 60_000;
-const ENDPOINTS = { health: src.health, anuntulcasei: src.anuntulcasei, minecraft: src.minecraft };
+export const REPO_SLUGS = ['oneway', 'faelles', 'copenhagen-pass-maximizer', 'bucuresti-bites-vibes'];
+const ENDPOINTS = {
+  health: src.health, anuntulcasei: src.anuntulcasei, minecraft: src.minecraft, monitoring: src.monitoring,
+  ...Object.fromEntries(REPO_SLUGS.map((s) => [s, src.repo(s)])),
+};
 
 export function createApp(cfg) {
   const cache = {}; // name -> { at, data, inflight }
@@ -60,7 +64,7 @@ export function createApp(cfg) {
     if (req.method === 'OPTIONS') return res.writeHead(204, { ...cors, Vary: 'Origin' }).end();
 
     const name = path.replace(/^\/v1\//, '');
-    if (!path.startsWith('/v1/') || !(name in ENDPOINTS || name === 'all')) return ok(404, { error: 'not found' });
+    if (!path.startsWith('/v1/') || !(Object.hasOwn(ENDPOINTS, name) || name === 'all')) return ok(404, { error: 'not found' });
 
     if (name !== 'all') {
       const d = await load(name);

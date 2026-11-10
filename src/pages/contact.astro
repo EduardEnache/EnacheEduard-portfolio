@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import { site } from '../data/site';
+import { site, phoneDisplay } from '../data/site';
 
 const endpoint = site.contactEndpoint;
 const fields = [
@@ -17,6 +17,7 @@ const fields = [
       <h1>Contact</h1>
       <p>Write to me about roles, projects or anything you would like to build.</p>
       <ul class="links">
+        <li><a href={`tel:${site.phone}`}>{phoneDisplay}</a></li>
         <li><a href={site.linkedin} rel="me noopener">LinkedIn</a></li>
         <li><a href={site.github} rel="me noopener">GitHub</a></li>
       </ul>

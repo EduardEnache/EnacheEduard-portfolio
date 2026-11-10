@@ -23,6 +23,24 @@
   ::view-transition-old(site-header), ::view-transition-new(site-header) { animation-duration: calc(var(--dur-ui) / 3); }
   ::view-transition-new(site-header) { animation-delay: calc(var(--dur-ui) / 6); }
 }
+
+/* Emblem door: the chosen emblem travels (shared element) while the page behind it opens or closes as a circle around the
+   emblem's centre at click time (--vt-x/--vt-y/--vt-r, set in transitions.ts). Replaces the wipe for home <-> project only. */
+@media (prefers-reduced-motion: no-preference) {
+  html[data-vt]::view-transition-group(wipe-line) { display: none; }
+  html[data-vt]::view-transition-group(*) { animation-duration: var(--dur-reveal); animation-timing-function: var(--ease-tide); }
+  html[data-vt]::view-transition-group(site-header) { animation-duration: var(--dur-ui); }
+  html[data-vt]::view-transition-old(*), html[data-vt]::view-transition-new(*) { animation-duration: var(--dur-ui); }
+  html[data-vt]::view-transition-old(root), html[data-vt]::view-transition-new(root) { mask: none; animation-duration: var(--dur-reveal); animation-timing-function: var(--ease-tide); }
+  html[data-vt=open]::view-transition-new(root) { animation-name: vt-open; }
+  html[data-vt=open]::view-transition-old(root) { animation: vt-recede var(--dur-reveal) var(--ease-tide) both; }
+  /* closing: the old page sits on top and shrinks into the emblem, the fan underneath is already there */
+  html[data-vt=close]::view-transition-old(root) { z-index: 2; animation-name: vt-close; animation-fill-mode: both; }
+  html[data-vt=close]::view-transition-new(root) { animation: none; }
+}
+@keyframes vt-open { from { clip-path: circle(0 at var(--vt-x) var(--vt-y)); } to { clip-path: circle(var(--vt-r) at var(--vt-x) var(--vt-y)); } }
+@keyframes vt-close { from { clip-path: circle(var(--vt-r) at var(--vt-x) var(--vt-y)); } to { clip-path: circle(0 at var(--vt-x) var(--vt-y)); } }
+@keyframes vt-recede { to { opacity: 0.35; transform: scale(0.97); } }
 @keyframes wipe-new {
   from { mask-position: 0 calc(-1 * var(--wipe-band)), 0 calc(-1 * var(--wipe-band) - 100vh); }
   to { mask-position: 0 100vh, 0 0; }
@@ -33,5 +51,6 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .wipe-line { display: none; }
+  .emblem { view-transition-name: none !important; } /* reduced motion: no travelling emblem, just the fade */
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation-duration: 0.15s; animation-timing-function: linear; }
 }

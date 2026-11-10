@@ -1,3 +1,7 @@
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+const execFileAsync = promisify(execFile);
+
 // Each fetcher reads one upstream and returns a NEW object built field by field.
 // Nothing from an upstream response is ever spread or passed through.
 
@@ -72,4 +76,26 @@ export async function minecraft(cfg) {
     leaderboard: board,
     bluemap_url: cfg.bluemapUrl || null,
   };
+}
+
+// Repo facts per project: counts, dates and a state word only (never messages, authors or paths).
+// cfg.repos is a fixed slug -> { dir, project?, state? } map from config, never user input.
+export const repo = (slug) => async (cfg) => {
+  const r = cfg.repos?.[slug];
+  if (!r) throw new Error('unconfigured');
+  const git = (...a) => execFileAsync('git', ['--git-dir', r.dir, ...a], { timeout: 3000 }).then((o) => o.stdout.trim());
+  const [count, last, running] = await Promise.all([
+    git('rev-list', '--count', '--all'),
+    git('log', '-1', '--all', '--format=%ct'),
+    r.state || !r.project ? null
+      : orNull(scalar(cfg, `count(container_last_seen{job="cadvisor",container_label_com_docker_compose_project="${r.project}"}>time()-60)`)),
+  ]);
+  return { commits: num(count), last_commit_at: iso(Number(last)), status: r.state ?? (running > 0 ? 'running' : 'stopped') };
+};
+
+// Prometheus itself: scrape targets up and series held.
+export async function monitoring(cfg) {
+  const [targets, up, series] = await Promise.all(['count(up)', 'count(up==1)', 'prometheus_tsdb_head_series'].map((q) => orNull(scalar(cfg, q))));
+  if (targets == null) throw new Error('upstream');
+  return { targets: num(targets), targets_up: num(up) ?? 0, series: num(series) };
 }

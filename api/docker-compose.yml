@@ -10,6 +10,11 @@ services:
       PORT: "8080"
     ports:
       - "127.0.0.1:${HOST_PORT:-8506}:8080"
+    volumes: # .git dirs only, read-only; the API runs `git rev-list` / `git log` on them
+      - ${HOME}/services/oneway/.git:/repos/oneway:ro
+      - ${HOME}/archive/faelles-trip-photos/.git:/repos/faelles:ro
+      - ${HOME}/archive/copenhagen-pass-maximizer/.git:/repos/copenhagen:ro
+      - ${HOME}/archive/bucharest-bitesnvibes.git:/repos/bucuresti:ro
     read_only: true
     cap_drop: [ALL]
     security_opt: ["no-new-privileges:true"]

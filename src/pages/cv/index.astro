@@ -1,7 +1,7 @@
 ---
 import { getEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import { site } from '../../data/site';
+import { site, phoneDisplay } from '../../data/site';
 import '../../styles/print.css';
 
 const cv = (await getEntry('cv', 'cv'))!.data;
@@ -14,7 +14,7 @@ const cv = (await getEntry('cv', 'cv'))!.data;
     </script>
     <header>
       <h1><span class="no-print">CV</span>{' '}<span class="print-only">Eduard Enache</span></h1>
-      <p class="print-only">Bucharest, Romania | Contact: eduardenache.ro/contact | linkedin.com/in/eduard-florentin-enache | github.com/EduardEnache</p>
+      <p class="print-only">Bucharest, Romania | {phoneDisplay} | Contact: eduardenache.ro/contact | linkedin.com/in/eduard-florentin-enache | github.com/EduardEnache</p>
       <p class="no-print cta"><a class="btn btn-primary dl" href={site.cvPdf} download>Download CV</a><span class="mono">PDF</span></p>
       <p class="summary">{cv.summary}</p>
       <hr class="horizon cv-line no-print" />

@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { createApp } from '../src/app.js';
 
 const SECRET = 'SECRET-xyz-10.1.2.3';
@@ -41,6 +45,25 @@ test('allow-list: no upstream extras leak, shapes are fixed', async () => {
   assert.deepEqual(mc.players, ['Steve', 'Alex']);
   assert.deepEqual(mc.leaderboard, [{ name: 'Steve', deaths: 3, play_hours: 1.5, mob_kills: 2 }]);
   assert.equal(mc.bluemap_url, 'https://map.example/');
+  s.close();
+});
+
+test('repo facts: only counts, a date and a state word; unknown names are 404', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'repo-'));
+  const g = (...a) => execFileSync('git', ['-C', dir, '-c', 'user.name=Secret Name', '-c', 'user.email=secret@example.com', ...a]);
+  g('init', '-q'); g('commit', '-q', '--allow-empty', '-m', 'SECRET-commit-message');
+  const repos = { oneway: { dir: join(dir, '.git'), project: 'oneway' }, faelles: { dir: join(dir, '.git'), state: 'retired' } };
+  const s = await start({ repos });
+  const one = await (await fetch(`${s.url}/v1/oneway`)).json();
+  assert.deepEqual(Object.keys(one).sort(), ['commits', 'last_commit_at', 'stale', 'status', 'updated_at']);
+  assert.equal(one.commits, 1);
+  assert.equal(one.status, 'running');
+  assert.equal((await (await fetch(`${s.url}/v1/faelles`)).json()).status, 'retired');
+  assert.equal((await fetch(`${s.url}/v1/constructor`)).status, 404);
+  const mon = await (await fetch(`${s.url}/v1/monitoring`)).json();
+  assert.deepEqual(Object.keys(mon).sort(), ['series', 'stale', 'targets', 'targets_up', 'updated_at']);
+  const all = await (await fetch(`${s.url}/v1/all`)).text();
+  assert.ok(!/SECRET|secret@|\/tmp\//i.test(all));
   s.close();
 });
 

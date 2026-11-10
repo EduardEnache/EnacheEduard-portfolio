@@ -4,6 +4,7 @@ title: "Copenhagen Pass Maximizer"
 tagline: "A trip planner that works out which city card pays off."
 status: retired
 year: 2026
+live: copenhagen-pass-maximizer
 numbers:
   - { value: 73, label: "automated tests" }
   - { value: 5, label: "itinerary variants per trip" }

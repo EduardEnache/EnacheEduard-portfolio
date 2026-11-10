@@ -1,4 +1,4 @@
-// npm run cv:pdf: build, serve dist on loopback, print /cv/ with headless Chromium, then fail if the PDF holds a phone number.
+// npm run cv:pdf: build, serve dist on loopback, print /cv/ with headless Chromium, then check the PDF.
 import { execFileSync, spawn } from 'node:child_process';
 import { createServer } from 'node:http';
 import { readFileSync, existsSync, statSync, readdirSync, mkdirSync } from 'node:fs';
@@ -6,11 +6,6 @@ import { join, extname } from 'node:path';
 import { homedir } from 'node:os';
 
 const OUT = 'public/cv/Eduard-Enache-CV.pdf';
-// +40, 07xxxxxxxx (spaces/dots/dashes allowed), or any run of 9+ digits with optional separators
-export const PHONE = /\+\s?\d{2}|\b0\s?7[\s.-]?\d(?:[\s.-]?\d){7}\b|\d(?:[ .-]?\d){8,}/;
-export const hasPhone = (text) => PHONE.test(text);
-
-// shortcut: the check is a regex heuristic, fine for a one-page CV; widen if the CV ever lists legit long numbers.
 if (process.argv[1] === new URL(import.meta.url).pathname) await main();
 
 async function main() {
@@ -42,10 +37,9 @@ async function main() {
 function check(pdf) {
   const text = execFileSync('pdftotext', ['-layout', pdf, '-'], { encoding: 'utf8' });
   const pages = Number(/Pages:\s+(\d+)/.exec(execFileSync('pdfinfo', [pdf], { encoding: 'utf8' }))?.[1]);
-  const m = PHONE.exec(text);
-  if (m) { console.error(`FAIL: phone-like text in ${pdf}: "${m[0]}"`); process.exit(1); }
+  if (!text.includes('+40 770 826 665')) { console.error(`FAIL: phone number missing from ${pdf}`); process.exit(1); }
   if (pages > 2) { console.error(`FAIL: ${pages} pages, max 2`); process.exit(1); }
-  console.log(`OK: ${pdf}, ${pages} page(s), no phone-like text`);
+  console.log(`OK: ${pdf}, ${pages} page(s), phone present`);
 }
 
 function findChrome() {

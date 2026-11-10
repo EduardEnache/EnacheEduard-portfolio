@@ -4,6 +4,7 @@ title: "București Bites & Vibes"
 tagline: "A mobile-first app to discover Bucharest venues."
 status: archived
 year: 2026
+live: bucuresti-bites-vibes
 numbers:
   - { value: 4, label: "venue states, to-try to visited" }
   - { value: 7, label: "activity event kinds in the feed" }

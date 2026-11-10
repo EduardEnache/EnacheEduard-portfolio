@@ -17,7 +17,7 @@ const projects = defineCollection({
     numbers: z.array(z.object({ value: z.number(), prefix: z.string().optional(), suffix: z.string().optional(), label: z.string() })).max(4).optional(),
     // 3-4 scenes; `shot` is "path | alt" and its path must be one of this entry's screenshots
     story: z.array(z.object({ label: z.string(), title: z.string(), text: z.string(), shot: z.string().optional() })).min(3).max(4).optional(),
-    live: z.enum(['anuntulcasei', 'minecraft', 'health']).optional(),
+    live: z.enum(['anuntulcasei', 'minecraft', 'health', 'monitoring', 'oneway', 'faelles', 'copenhagen-pass-maximizer', 'bucuresti-bites-vibes']).optional(),
   }).refine(
     (d) => (d.story ?? []).every((s) => !s.shot || d.screenshots.some((x) => x.split(' | ')[0].trim() === s.shot!.split(' | ')[0].trim())),
     { message: 'story.shot must be one of the entry screenshots' },

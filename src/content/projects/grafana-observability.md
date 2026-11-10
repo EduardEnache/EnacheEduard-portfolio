@@ -4,7 +4,7 @@ title: "Grafana observability"
 tagline: "One command-centre dashboard with a row per project."
 status: live
 year: 2026
-live: health
+live: monitoring
 numbers:
   - { value: 63, label: "panels on the command centre" }
   - { value: 8, label: "rows, one per area or project" }
