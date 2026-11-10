@@ -1,4 +1,5 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { z } from 'astro/zod';
 import { glob, file } from 'astro/loaders';
 
 const projects = defineCollection({
@@ -9,7 +10,7 @@ const projects = defineCollection({
     tagline: z.string(),
     status: z.enum(['live', 'retired', 'archived']),
     year: z.number(),
-    url: z.string().url().optional(),
+    url: z.url().optional(),
     stack: z.array(z.object({ group: z.string(), items: z.array(z.string()) })),
     facts: z.array(z.object({ label: z.string(), value: z.string() })),
     // paths relative to design/assets/projects/, e.g. "oneway/landing.webp"

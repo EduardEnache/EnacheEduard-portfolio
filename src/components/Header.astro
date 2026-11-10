@@ -2,7 +2,7 @@
 import { site, nav } from '../data/site';
 ---
 <header class="site-header wrap" data-scene="header" transition:persist="site-header">
-  <a class="wordmark" href="/">{site.name}</a>
+  <a class="wordmark" href="/" aria-label="Eduard Enache, portfolio home">{site.wordmark}</a>
   <nav aria-label="Main">
     <ul>
       {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}

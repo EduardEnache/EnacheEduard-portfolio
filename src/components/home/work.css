@@ -36,7 +36,7 @@
 .card .cap { display: flex; flex-direction: column; gap: 6px; margin-top: var(--space-2); }
 .card .cap b { font-family: var(--font-display); font-weight: 800; font-variation-settings: 'wdth' 112; text-transform: uppercase; font-size: 15px; line-height: 1.05; }
 .card .cap span { font-size: 13px; line-height: 1.4; color: var(--sky-300); }
-.card .cap i { font-style: normal; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--haze-200); }
+.card .cap i { font-style: normal; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--haze-200); }
 .card:focus-visible .in { outline: 2px solid var(--accent); outline-offset: 3px; }
 .hub { display: none; }
 @media (hover: hover) { .card:hover .in { border-color: var(--accent); } }

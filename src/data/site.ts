@@ -1,5 +1,6 @@
 export const site = {
   name: 'Eduard Enache',
+  wordmark: 'Portfolio', // header link text; the name itself is in the hero, footer and meta
   role: 'QA Engineer',
   org: 'Orange Services, Bucharest',
   title: 'Eduard Enache | QA engineer and builder',

@@ -6,6 +6,7 @@ import { join, extname } from 'node:path';
 import { homedir } from 'node:os';
 
 const OUT = 'public/cv/Eduard-Enache-CV.pdf';
+const DIST = process.env.DIST || 'dist';
 if (process.argv[1] === new URL(import.meta.url).pathname) await main();
 
 async function main() {
@@ -16,9 +17,9 @@ async function main() {
   execFileSync('npm', ['run', 'build'], { stdio: 'inherit' });
   const types = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.png': 'image/png', '.json': 'application/json' };
   const server = createServer((req, res) => {
-    let p = join('dist', decodeURIComponent(req.url.split('?')[0]));
+    let p = join(DIST, decodeURIComponent(req.url.split('?')[0]));
     if (existsSync(p) && statSync(p).isDirectory()) p = join(p, 'index.html');
-    if (!p.startsWith('dist') || !existsSync(p)) return res.writeHead(404).end();
+    if (!p.startsWith(DIST) || !existsSync(p)) return res.writeHead(404).end();
     res.writeHead(200, { 'Content-Type': types[extname(p)] ?? 'application/octet-stream' }).end(readFileSync(p));
   });
   await new Promise((r) => server.listen(0, '127.0.0.1', r));
