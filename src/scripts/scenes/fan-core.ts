@@ -3,6 +3,7 @@ import { gsap, ScrollTrigger } from '../motion';
 import { Draggable } from 'gsap/Draggable';
 import { maskUrls } from './dither';
 import { cssNum, dur } from './tokens';
+import { cameFrom } from './transitions';
 
 gsap.registerPlugin(Draggable);
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
@@ -21,17 +22,19 @@ export function mountFan(root: HTMLElement): () => void {
   const lift = cssNum('--fan-lift', root);
   const ac = new AbortController();
   const on = { signal: ac.signal };
-  const state = { rot: 0 };
-  let active = 0;
+  /* coming back from a project page: start on its card (direct loads: card 1) */
+  const first = Math.max(0, cards.findIndex((c) => c.getAttribute('href') === `/work/${cameFrom()}/`));
+  const state = { rot: first };
+  let active = first;
 
-  function print(i: number) {
+  function print(i: number, animate = true) {
     const c = cards[i];
     hub.i.textContent = `${String(i + 1).padStart(2, '0')} / ${String(N).padStart(2, '0')}`;
     hub.n.textContent = c.dataset.name ?? '';
     hub.d.textContent = c.dataset.desc ?? '';
     hub.s.textContent = c.dataset.stat ?? '';
     hub.live.textContent = `${c.dataset.name}. ${c.dataset.desc}. ${c.dataset.stat}`; // announced once per card
-    gsap.fromTo([hub.n, hub.d, hub.s], { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: dur('ui'), stagger: cssNum('--stagger'), overwrite: true });
+    if (animate) gsap.fromTo([hub.n, hub.d, hub.s], { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: dur('ui'), stagger: cssNum('--stagger'), overwrite: true });
   }
 
   /* per frame: only transform/opacity, only for cards that moved, cards outside the arc are hidden and left alone */
@@ -57,14 +60,17 @@ export function mountFan(root: HTMLElement): () => void {
       print(idx);
     }
   }
+  if (first) { cards[0].classList.remove('on'); cards[first].classList.add('on'); print(first, false); }
   render();
 
-  const tween = gsap.to(state, {
-    rot: N - 1, ease: 'none', onUpdate: render,
+  /* fromTo: ScrollTrigger owns the rotation from scroll progress, so the tween must span 0..N-1 even when we start mid-way */
+  const tween = gsap.fromTo(state, { rot: 0 }, {
+    rot: N - 1, ease: 'none', onUpdate: render, immediateRender: false,
     scrollTrigger: { trigger: track, start: 'top top', end: 'bottom bottom', scrub: dur('ui'), invalidateOnRefresh: true },
   });
   const st = tween.scrollTrigger!;
   const scrollToProgress = (p: number) => window.scrollTo({ top: st.start + clamp01(p) * (st.end - st.start), behavior: 'instant' });
+  if (first) { scrollToProgress(first / (N - 1)); ScrollTrigger.update(); st.getTween()?.progress(1); } // scroll and card agree, no smoothing run-up from card 1
 
   /* drag rotates by driving the same scroll range; vertical gestures stay native (touch-action: pan-y) */
   let moved = false;

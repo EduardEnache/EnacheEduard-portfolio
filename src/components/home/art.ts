@@ -9,6 +9,20 @@ const base = `<circle cx="50" cy="50" r="46" fill="${c.sky}"/>${shape('M6.2 64A4
 const frame = (art: string, strokes: string) =>
   `${base}${art}<g class="st" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">${line(6, 64, 94, 64, c.gold)}${line(34, 72, 66, 72, c.mid)}${line(42, 79, 58, 79, c.mid)}${strokes}<circle cx="50" cy="50" r="46" stroke="${c.paper}" stroke-opacity=".5"/></g>`;
 
+/** Isometric cube (2:1), front-bottom corner at (x, y), half-width w. Faces top/left/right, edge strokes, and a squashed mirror image in the water (horizon y 64). */
+type P = [number, number];
+const pts = (a: P[]) => a.map((p) => p.join(',')).join(' ');
+const cube = (x: number, y: number, w: number, [t, l, r]: string[], lip = '', mirror = false) => {
+  const h = w / 2, B: P = [x, y], FT: P = [x, y - w], BT: P = [x, y - 2 * w], LT: P = [x - w, y - w - h], RT: P = [x + w, y - w - h], LB: P = [x - w, y - h], RB: P = [x + w, y - h];
+  const face = (a: P[], f: string) => shape(`M${pts(a).replace(/ /g, 'L')}Z`, f);
+  const m = (a: P[]) => a.map(([i, j]): P => [i, +(64 + (64 - j) * 0.42).toFixed(1)]);
+  return {
+    fill: face([LT, FT, B, LB], l) + face([FT, RT, RB, B], r) + face([BT, RT, FT, LT], t) +
+      (lip && face([LT, FT, [x, y - w + 4], [x - w, y - w - h + 4]], lip) + face([FT, RT, [x + w, y - w - h + 4], [x, y - w + 4]], lip)),
+    edge: poly(pts([LT, FT, RT])) + line(FT[0], FT[1], B[0], B[1]),
+    ghost: mirror ? `<g opacity=".4">${face(m([LT, FT, B, LB]), l)}${face(m([FT, RT, RB, B]), r)}</g>` : '',
+  };
+};
 const emblems: Record<string, string> = {
   // roofline of three houses, a pin over the tallest
   anuntulcasei: frame(
@@ -23,10 +37,15 @@ const emblems: Record<string, string> = {
   oneway: frame(
     dot(27, 48, 10, c.ink) + dot(73, 48, 10, c.gold) + dot(27, 80, 3, c.sea) + dot(73, 80, 3, c.sea),
     line(40, 48, 58, 48, c.ink) + poly('52,42 59,48 52,54', c.ink) + `<circle cx="27" cy="48" r="14" stroke="${c.mid}"/>` + `<circle cx="73" cy="48" r="14" stroke="${c.mid}"/>`),
-  // two photo frames overlapping, one with a sun over hills
-  'faelles': frame(
-    `<rect x="22" y="28" width="32" height="30" fill="${c.mid}" transform="rotate(-8 38 43)"/><rect x="42" y="30" width="34" height="30" fill="${c.paper}" transform="rotate(6 59 45)"/>` + dot(66, 40, 3.4, c.gold) + shape('M46 60l10-12 8 8 6-6 5 10Z', c.taupe),
-    `<rect x="22" y="28" width="32" height="30" stroke="${c.paper}" transform="rotate(-8 38 43)"/><rect x="42" y="30" width="34" height="30" stroke="${c.ink}" transform="rotate(6 59 45)"/>`),
+  // a fanned stack of three photos standing on the horizon: harbour sun on the front one, two gold rings (shared) in its caption
+  'faelles': (() => {
+    const card = (a: number, inner: string, f: string) => `<g transform="rotate(${a} 50 66)"><rect x="32" y="18" width="36" height="46" fill="${c.paper}" stroke="${c.ink}" stroke-width=".9"/><rect x="35.5" y="21.5" width="29" height="31" fill="${f}"/>${inner}</g>`;
+    return frame(
+      card(-26, shape('M35.5 52.5V44l10-8 9 6 10-5v15.5Z', c.haze), c.taupe) + card(26, dot(57, 30, 2.8, c.paper), c.sea) +
+        card(0, dot(50, 40, 5.5, c.gold) + shape('M35.5 45h29v7.5h-29Z', c.deep) + shape('M52 45l4-8 4 8Z', c.paper), c.dusk),
+      line(35.5, 45, 64.5, 45, c.haze) + line(41, 49, 50, 49, c.mid) + line(53, 51.5, 61, 51.5, c.mid) +
+        `<circle cx="46.6" cy="58.5" r="3" stroke="${c.gold}"/><circle cx="53.4" cy="58.5" r="3" stroke="${c.gold}"/>`);
+  })(),
   // a pass with ticket notches, a harbour spire behind it
   'copenhagen-pass-maximizer': frame(
     shape('M47 40l3-28 3 28Z', c.ink) + shape('M20 62V40h60v22Z', c.paper) + dot(20, 51, 4.5, c.sky) + dot(80, 51, 4.5, c.sky) + dot(64, 51, 5, c.gold),
@@ -40,10 +59,15 @@ const emblems: Record<string, string> = {
   'grafana-observability': frame(
     shape('M20 20h60v44H20Z', c.sea) + shape('M24 24h52v26H24Z', c.deep),
     line(26, 56, 74, 56, c.taupeL) + line(30, 60, 42, 60, c.taupeL) + poly('28,46 38,40 46,43 58,32 66,34 73,27', c.gold) + `<path d="M20 20h60v44H20Z" stroke="${c.paper}"/>`),
-  // isometric block resting on the horizon
-  minecraft: frame(
-    shape('M50 14l24 12-24 12-24-12Z', c.haze) + shape('M26 26l24 12v26L26 52Z', c.taupe) + shape('M74 26L50 38v26l24-12Z', c.dusk),
-    poly('50,20 58,24 50,28 42,24 50,20', c.taupe) + poly('26,26 50,38 74,26') + line(50, 38, 50, 64) + poly('26,26 26,52 50,64 74,52 74,26', c.paper)),
+  // terraced landscape of isometric blocks on the horizon: a tree, a stepped pair, a torch, mirrored in the water
+  minecraft: (() => {
+    const dirt = [c.taupeL, c.dusk, c.sea], g = c.taupe, a = cube(26, 64, 12, dirt, g, true), b = cube(50, 64, 12, dirt, '', true), b2 = cube(50, 52, 12, dirt, g), d = cube(74, 64, 12, dirt, g, true);
+    const k = cube(26, 36, 7, [c.haze, c.taupeL, c.taupe]);
+    return frame(
+      a.ghost + b.ghost + d.ghost + a.fill + b.fill + b2.fill + d.fill +
+        `<rect x="24.6" y="36" width="2.8" height="10" fill="${c.ink}"/>` + k.fill + `<rect x="73" y="40" width="2" height="6" fill="${c.ink}"/>` + shape('M74 31c3 3 3 6 0 8-3-2-3-5 0-8Z', c.gold),
+      a.edge + b.edge + b2.edge + d.edge + k.edge + poly('74,26 74,23', c.gold) + poly('67,35 65,34', c.gold) + poly('81,35 83,34', c.gold));
+  })(),
 };
 export interface Art { theme: 'water' | 'sky' | 'taupe' | 'ink'; svg: string }
 const themes: Record<string, Art['theme']> = { anuntulcasei: 'ink', homelab: 'water', oneway: 'sky', faelles: 'taupe', 'copenhagen-pass-maximizer': 'water', 'bucuresti-bites-vibes': 'taupe', 'grafana-observability': 'sky', minecraft: 'ink' };

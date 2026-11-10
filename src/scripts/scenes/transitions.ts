@@ -46,9 +46,12 @@ document.addEventListener('astro:after-swap', apply);
 
 /** Focus after a client-side navigation (the swap leaves it on <body>): the card we came from when going Back home, else <main>. */
 let navigated = false, leftSlug = '';
+/** Slug of the project page we just came back from ('' otherwise): the fan starts on that card. */
+export const cameFrom = () => leftSlug;
 document.addEventListener('astro:before-preparation', (e) => {
   navigated = true;
   leftSlug = e.to.pathname === '/' ? e.from.pathname.match(/^\/work\/([^/]+)/)?.[1] ?? '' : '';
+  if (leftSlug) import('./fan-core'); // warm the chunk so the fan mounts before the new page is captured
 });
 document.addEventListener('astro:page-load', () => {
   if (!navigated) return;
