@@ -1,0 +1,29 @@
+name: portfolio-api
+
+services:
+  api:
+    build: .
+    container_name: portfolio-api
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PORT: "8080"
+    ports:
+      - "127.0.0.1:${HOST_PORT:-8506}:8080"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 128m
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/healthz').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks: [prom, casata, minecraft]
+
+# Existing networks of the three read-only sources (names come from .env).
+networks:
+  prom: { external: true, name: "${NET_PROMETHEUS}" }
+  casata: { external: true, name: "${NET_CASATA}" }
+  minecraft: { external: true, name: "${NET_MINECRAFT}" }
