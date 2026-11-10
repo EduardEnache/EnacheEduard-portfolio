@@ -2,7 +2,6 @@
 import { getEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { site, phoneDisplay } from '../../data/site';
-import '../../styles/print.css';
 
 const cv = (await getEntry('cv', 'cv'))!.data;
 ---
@@ -13,22 +12,21 @@ const cv = (await getEntry('cv', 'cv'))!.data;
       if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.currentScript.parentElement.classList.add('has-motion');
     </script>
     <header>
-      <h1><span class="no-print">CV</span>{' '}<span class="print-only">Eduard Enache</span></h1>
-      <p class="print-only">Bucharest, Romania | {phoneDisplay} | {site.email} | Contact: eduardenache.ro/contact | linkedin.com/in/eduard-florentin-enache | github.com/EduardEnache</p>
-      <p class="no-print contact-line mono"><a href={`mailto:${site.email}`}>{site.email}</a><a href={`tel:${site.phone}`}>{phoneDisplay}</a></p>
-      <p class="no-print cta"><a class="btn btn-primary dl" href={site.cvPdf} download>Download CV</a><span class="mono">PDF</span></p>
+      <h1>CV</h1>
+      <p class="contact-line mono"><a href={`mailto:${site.email}`}>{site.email}</a><a href={`tel:${site.phone}`}>{phoneDisplay}</a></p>
+      <p class="cta"><a class="btn btn-primary dl" href={site.cvPdf} download>Download CV</a><span class="mono">PDF</span></p>
       <p class="summary">{cv.summary}</p>
-      <hr class="horizon cv-line no-print" />
+      <hr class="horizon cv-line" />
     </header>
 
     <!-- one gold line, the horizon turned vertical, joins experience and education -->
     <div class="tl">
-      <div class="tl-line no-print" aria-hidden="true"></div>
+      <div class="tl-line" aria-hidden="true"></div>
       <section aria-labelledby="exp">
         <h2 id="exp">Experience</h2>
         <ol class="timeline">
           {cv.roles.map((r) => (
-            <li class="role"><span class="node no-print" aria-hidden="true"></span><span class="mono date">{r.start} to {r.end}</span><h3>{r.title}</h3><p>{r.org}{r.place && `, ${r.place}`}</p>
+            <li class="role"><span class="node" aria-hidden="true"></span><span class="mono date">{r.start} to {r.end}</span><h3>{r.title}</h3><p>{r.org}{r.place && `, ${r.place}`}</p>
               {r.bullets.length > 0 && <ul class="bullets">{r.bullets.map((b) => <li>{b}</li>)}</ul>}
               {r.tools && <p class="mono tools">Tools: {r.tools}</p>}</li>
           ))}
@@ -39,7 +37,7 @@ const cv = (await getEntry('cv', 'cv'))!.data;
         <h2 id="edu">Education</h2>
         <ol class="timeline">
           {cv.education.map((e) => (
-            <li class="role"><span class="node no-print" aria-hidden="true"></span><span class="mono date">{e.start} to {e.end}</span><h3>{e.title}</h3><p>{e.org}</p>{e.detail && <p>{e.detail}</p>}</li>
+            <li class="role"><span class="node" aria-hidden="true"></span><span class="mono date">{e.start} to {e.end}</span><h3>{e.title}</h3><p>{e.org}</p>{e.detail && <p>{e.detail}</p>}</li>
           ))}
         </ol>
       </section>
@@ -66,7 +64,7 @@ const cv = (await getEntry('cv', 'cv'))!.data;
       <p class="mono">{cv.languages.map((l) => `${l.name}: ${l.level}`).join(' / ')}</p>
     </section>
 
-    <section class="cv-end no-print" aria-label="Download">
+    <section class="cv-end" aria-label="Download">
       <hr class="horizon" />
       <p class="cta"><a class="btn btn-primary dl" href={site.cvPdf} download>Download CV</a><span class="mono">PDF</span></p>
     </section>
@@ -88,7 +86,7 @@ const cv = (await getEntry('cv', 'cv'))!.data;
   .wrap > * + * { margin-top: var(--space-5); }
   header p { margin-top: var(--space-3); }
   header .cv-line { margin-top: var(--space-4); height: 1.5px; transform-origin: left; }
-  h2 { font-size: clamp(var(--fs-lg), 8vw, var(--fs-xl)); margin-bottom: var(--space-3); }
+  h2 { font-size: clamp(26px, 8vw, var(--fs-xl)); margin-bottom: var(--space-3); } /* 26px floor: "Certifications" must fit a 320px phone */
   .cta { display: flex; align-items: center; gap: var(--space-2); }
   .dl { padding: 18px 32px; font-size: var(--fs-md); }
   .cv-end .cta { margin-top: var(--space-4); }
@@ -99,7 +97,7 @@ const cv = (await getEntry('cv', 'cv'))!.data;
   .skills div { border-top: 1px solid var(--line); padding-top: var(--space-1); }
   .certs { display: flex; flex-wrap: wrap; gap: var(--space-1); margin-bottom: var(--space-2); }
 
-  /* screen layout only; print.css owns the paper version */
+  /* screen layout */
   @media screen {
     .tl { position: relative; --tl-x: 0px; --tl-pad: var(--space-3); }
     .tl > section + section { margin-top: var(--space-5); }
@@ -110,7 +108,7 @@ const cv = (await getEntry('cv', 'cv'))!.data;
     .armed .node { background: transparent; box-shadow: inset 0 0 0 1.5px var(--accent); }
     .armed .role.on .node { background: var(--accent); }
     .date { display: block; }
-    .has-motion .tl :is(h2, h3) { visibility: hidden; } /* shown by the scene once the lines are masked */
+    .has-motion .tl :is(h2, h3) { visibility: hidden; animation: cv-show 0s 3s forwards; } /* shown by the scene once the lines are masked; the animation is the net if the scene never loads */
 
     .skills { grid-template-columns: 1fr; gap: 0; border-bottom: 1px solid var(--line); }
     .skills div { display: grid; grid-template-columns: 1fr; gap: var(--space-1); padding-block: var(--space-2); }
@@ -132,7 +130,7 @@ const cv = (await getEntry('cv', 'cv'))!.data;
     .skills div { grid-template-columns: var(--tl-x, 224px) 1fr; column-gap: var(--tl-pad, 48px); }
     .skills { --tl-x: 224px; --tl-pad: var(--space-4); }
   }
-  @media print { .summary, .bullets, main p { max-width: none; } } /* the paper column uses the full printable width */
+  @keyframes cv-show { to { visibility: visible; } }
   @keyframes cv-draw { from { transform: scaleX(0); } }
   @keyframes cv-up { from { opacity: 0; transform: translateY(var(--space-2)); } }
 </style>

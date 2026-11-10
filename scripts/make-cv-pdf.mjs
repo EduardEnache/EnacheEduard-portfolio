@@ -1,51 +1,27 @@
-// npm run cv:pdf: build, serve dist on loopback, print /cv/ with headless Chromium, then check the PDF.
-import { execFileSync, spawn } from 'node:child_process';
-import { createServer } from 'node:http';
-import { readFileSync, existsSync, statSync, readdirSync, mkdirSync } from 'node:fs';
-import { join, extname } from 'node:path';
-import { homedir } from 'node:os';
+// npm run cv:pdf: convert Eduard's own CV (updated .docx) to public/cv/Eduard-Enache-CV.pdf with LibreOffice,
+// then fail unless it is 2 pages, A4, and uses the same fonts as the original PDF export.
+import { execFileSync } from 'node:child_process';
+import { copyFileSync, mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
+const DIR = 'design/assets/cv';
+const SRC = `${DIR}/Enache_Eduard_Florentin_CV.updated.docx`;
+const ORIGINAL = `${DIR}/Enache_Eduard_Florentin_CV.pdf`;
 const OUT = 'public/cv/Eduard-Enache-CV.pdf';
-const DIST = process.env.DIST || 'dist';
-if (process.argv[1] === new URL(import.meta.url).pathname) await main();
 
-async function main() {
-  const chrome = process.env.CHROME_PATH ?? findChrome();
-  if (process.argv[2] === '--check') { // self-test: node scripts/make-cv-pdf.mjs --check <pdf>
-    return check(process.argv[3]);
-  }
-  execFileSync('npm', ['run', 'build'], { stdio: 'inherit' });
-  const types = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.png': 'image/png', '.json': 'application/json' };
-  const server = createServer((req, res) => {
-    let p = join(DIST, decodeURIComponent(req.url.split('?')[0]));
-    if (existsSync(p) && statSync(p).isDirectory()) p = join(p, 'index.html');
-    if (!p.startsWith(DIST) || !existsSync(p)) return res.writeHead(404).end();
-    res.writeHead(200, { 'Content-Type': types[extname(p)] ?? 'application/octet-stream' }).end(readFileSync(p));
-  });
-  await new Promise((r) => server.listen(0, '127.0.0.1', r));
-  try {
-    mkdirSync('public/cv', { recursive: true });
-    // async spawn: execFileSync would starve the server above; 'exit' awaited as Chromium helpers keep pipes open
-    const proc = spawn(chrome, ['--headless', '--no-sandbox', '--disable-gpu', '--no-pdf-header-footer',
-      `--print-to-pdf=${OUT}`, `http://127.0.0.1:${server.address().port}/cv/`], { stdio: 'ignore', timeout: 60000 });
-    await new Promise((ok, fail) => proc.on('exit', (c) => (c === 0 ? ok() : fail(new Error(`chromium exited ${c}`)))));
-  } finally {
-    server.close();
-  }
-  check(OUT);
-}
+const run = (cmd, args) => execFileSync(cmd, args, { encoding: 'utf8' });
+const fonts = (pdf) => [...new Set(run('pdffonts', [pdf]).split('\n').slice(2).filter(Boolean).map((l) => l.split(/\s+/)[0].replace(/^[A-Z]+\+/, '')))].sort().join(', ');
+const fail = (m) => { console.error(`FAIL: ${m}`); process.exit(1); };
 
-function check(pdf) {
-  const text = execFileSync('pdftotext', ['-layout', pdf, '-'], { encoding: 'utf8' });
-  const pages = Number(/Pages:\s+(\d+)/.exec(execFileSync('pdfinfo', [pdf], { encoding: 'utf8' }))?.[1]);
-  if (!text.includes('+40 770 826 665')) { console.error(`FAIL: phone number missing from ${pdf}`); process.exit(1); }
-  if (pages > 2) { console.error(`FAIL: ${pages} pages, max 2`); process.exit(1); }
-  console.log(`OK: ${pdf}, ${pages} page(s), phone present`);
-}
+const tmp = mkdtempSync(join(tmpdir(), 'cv-'));
+run('soffice', ['--headless', '--convert-to', 'pdf', '--outdir', tmp, SRC]);
+const pdf = join(tmp, 'Enache_Eduard_Florentin_CV.updated.pdf');
 
-function findChrome() {
-  const root = join(homedir(), '.cache/ms-playwright');
-  const dirs = readdirSync(root).filter((d) => d.startsWith('chromium-')).sort().reverse();
-  for (const d of dirs) { const p = join(root, d, 'chrome-linux64/chrome'); if (existsSync(p)) return p; }
-  throw new Error('No Chromium found; set CHROME_PATH');
-}
+const info = run('pdfinfo', [pdf]);
+const pages = Number(/Pages:\s+(\d+)/.exec(info)?.[1]);
+if (pages !== 2) fail(`${pages} pages, expected 2`);
+if (!/A4/.test(info)) fail('page size is not A4');
+if (fonts(pdf) !== fonts(ORIGINAL)) fail(`fonts differ (LibreOffice substituted one?): ${fonts(pdf)} vs ${fonts(ORIGINAL)}`);
+copyFileSync(pdf, OUT);
+console.log(`OK: ${OUT}, 2 pages, A4, fonts ${fonts(pdf)}`);

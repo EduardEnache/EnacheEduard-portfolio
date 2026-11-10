@@ -2,11 +2,11 @@
 const style = (el: Element = document.documentElement) => getComputedStyle(el);
 export const cssVar = (name: string, el?: Element) => style(el).getPropertyValue(name).trim();
 export const cssNum = (name: string, el?: Element) => parseFloat(cssVar(name, el));
-/** '0.6s' / '600ms' to seconds. */
-export const dur = (name: string) => {
-  const v = cssVar(`--dur-${name}`);
-  return v.endsWith('ms') ? parseFloat(v) / 1000 : parseFloat(v);
-};
+/** '0.6s' / '600ms' to seconds (the build minifies 0.06s to 60ms, so parseFloat alone is off by 1000). */
+const secs = (v: string) => (v.endsWith('ms') ? parseFloat(v) / 1000 : parseFloat(v));
+export const dur = (name: string) => secs(cssVar(`--dur-${name}`));
+/** The --stagger token in seconds, as GSAP wants it. */
+export const stagger = () => secs(cssVar('--stagger'));
 /** A GSAP ease function from an ease token written as a CSS four-point bezier. */
 export function ease(name: string): (t: number) => number {
   const m = cssVar(`--ease-${name}`).match(/\(([^)]+)\)/);

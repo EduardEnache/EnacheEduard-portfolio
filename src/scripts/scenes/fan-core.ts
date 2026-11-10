@@ -2,7 +2,7 @@
 import { gsap, ScrollTrigger } from '../motion';
 import { Draggable } from 'gsap/Draggable';
 import { maskUrls } from './dither';
-import { cssNum, dur } from './tokens';
+import { cssNum, dur, stagger } from './tokens';
 import { cameFrom, viaHistory } from './transitions';
 
 gsap.registerPlugin(Draggable);
@@ -34,7 +34,7 @@ export function mountFan(root: HTMLElement): () => void {
     hub.d.textContent = c.dataset.desc ?? '';
     hub.s.textContent = c.dataset.stat ?? '';
     hub.live.textContent = `${c.dataset.name}. ${c.dataset.desc}. ${c.dataset.stat}`; // announced once per card
-    if (animate) gsap.fromTo([hub.n, hub.d, hub.s], { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: dur('ui'), stagger: cssNum('--stagger'), overwrite: true });
+    if (animate) gsap.fromTo([hub.n, hub.d, hub.s], { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: dur('ui'), stagger: stagger(), overwrite: true });
   }
 
   /* per frame: only transform/opacity, only for cards that moved, cards outside the arc are hidden and left alone */
