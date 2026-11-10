@@ -1,5 +1,6 @@
 ---
 import { liveRows, type ProjectData } from './data';
+import '../live/pulse.css';
 interface Props { data: ProjectData }
 const { data } = Astro.props;
 const block = data.live ? liveRows[data.live] : undefined;
@@ -7,6 +8,7 @@ const block = data.live ? liveRows[data.live] : undefined;
 {data.live && block && (
   <section class="p-live wrap" aria-label={block.title}>
     <div class="live" data-live={data.live} data-state="offline" data-scene="project-live">
+      <span class="pulse-rail" aria-hidden="true"><i class="pulse-run"></i></span>
       <p class="mono live-head"><span class="dot" aria-hidden="true"></span><span>{block.title}</span><span data-status>Offline, showing last known values</span></p>
       <dl class="live-rows">
         {block.rows.map(([label, key, fallback, fmt, of]) => (
@@ -16,3 +18,6 @@ const block = data.live ? liveRows[data.live] : undefined;
     </div>
   </section>
 )}
+<style>
+  .pulse-rail { position: absolute; left: 0; right: 0; top: -1.5px; }
+</style>

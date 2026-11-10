@@ -1,0 +1,37 @@
+/* Shell: page-to-page wipe (view transition), persistent header, nav marker. The wipe is led by one gold line. */
+:root { --wipe-cell: 3px; --wipe-band: calc(var(--wipe-rows) * var(--wipe-cell)); }
+
+/* the line is parked just above the viewport; during a transition its snapshot sweeps down with the dither edge */
+.wipe-line { position: fixed; left: 0; right: 0; top: -4px; height: 2px; background: var(--accent); pointer-events: none; z-index: 90; view-transition-name: wipe-line; }
+.site-header { view-transition-name: site-header; }
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root), ::view-transition-new(root) { mix-blend-mode: normal; }
+  /* the new page sits on top of the old one and is revealed above the line; the Bayer band thins it out toward the line */
+  ::view-transition-old(root) { animation: none; }
+  ::view-transition-new(root) {
+    animation: wipe-new var(--dur-reveal) var(--ease-tide) both;
+    mask-image: var(--m-wipe), linear-gradient(var(--water-900) 0 0);
+    mask-size: calc(var(--wipe-cols) * var(--wipe-cell)) var(--wipe-band), 100% 100%;
+    mask-repeat: repeat-x, no-repeat;
+    mask-position: 0 calc(-1 * var(--wipe-band)), 0 calc(-1 * var(--wipe-band) - 100vh);
+  }
+  ::view-transition-old(wipe-line) { display: none; }
+  ::view-transition-new(wipe-line) { animation: none; mix-blend-mode: normal; }
+  ::view-transition-group(wipe-line) { animation: wipe-line var(--dur-reveal) var(--ease-tide) both; }
+  ::view-transition-group(site-header) { animation-duration: var(--dur-ui); animation-timing-function: var(--ease-tide); }
+  ::view-transition-old(site-header), ::view-transition-new(site-header) { animation-duration: calc(var(--dur-ui) / 3); }
+  ::view-transition-new(site-header) { animation-delay: calc(var(--dur-ui) / 6); }
+}
+@keyframes wipe-new {
+  from { mask-position: 0 calc(-1 * var(--wipe-band)), 0 calc(-1 * var(--wipe-band) - 100vh); }
+  to { mask-position: 0 100vh, 0 0; }
+}
+@keyframes wipe-line {
+  from { transform: translateY(-1px); }
+  to { transform: translateY(calc(100vh + var(--wipe-band) - 1px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wipe-line { display: none; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation-duration: 0.15s; animation-timing-function: linear; }
+}

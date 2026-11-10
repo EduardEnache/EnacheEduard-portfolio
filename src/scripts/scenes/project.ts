@@ -1,6 +1,7 @@
 /** Project page scenes: numbers count up, the story rail draws with scroll, screenshots dissolve in, live values hydrate. */
 import { scene, mm, conditions, gsap, ScrollTrigger } from '../motion';
 import { dur, ease } from './tokens';
+import { pulse, tickBlock } from './live-pulse';
 
 const decimals = (n: number) => (String(n).split('.')[1] ?? '').length;
 
@@ -30,9 +31,11 @@ scene('project', (el) => {
   });
 });
 
-/** The live strip hydrates in every motion mode: one request, static fallback stays when the API is silent. */
+/** The live strip hydrates in every motion mode: one request, static fallback stays when the API is silent. A fill pulses the line and ticks the numbers. */
 scene('project-live', (block) => {
-  let dead = false;
+  let dead = false, stopTick = () => {};
+  const onFill = () => { stopTick(); stopTick = tickBlock(block); pulse(block); };
+  block.addEventListener('live:fill', onFill);
   const io = new IntersectionObserver(async ([e]) => {
     if (!e.isIntersecting) return;
     io.disconnect();
@@ -41,5 +44,5 @@ scene('project-live', (block) => {
     if (!dead && block.dataset.state === 'live') block.classList.add('pulse');
   }, { rootMargin: '50% 0px' });
   io.observe(block);
-  document.addEventListener('astro:before-swap', () => { dead = true; io.disconnect(); }, { once: true });
+  document.addEventListener('astro:before-swap', () => { dead = true; io.disconnect(); stopTick(); block.removeEventListener('live:fill', onFill); gsap.killTweensOf(block.querySelectorAll('.pulse-run')); }, { once: true });
 });

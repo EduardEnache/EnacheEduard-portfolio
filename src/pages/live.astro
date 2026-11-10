@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import '../components/live/pulse.css';
 
 // Static fallbacks (last known values). Replaced at runtime when PUBLIC_API_BASE answers.
 // Row: [label, API field, fallback, format, total field for "x of y"]
@@ -16,22 +17,36 @@ const blocks: { title: string; key: string; rows: Row[] }[] = [
     ['Slots', 'players_max', 'n/a'], ['Who is on', 'players', 'n/a', 'list'] ] },
 ];
 ---
-<Base title="Live | Eduard Enache" description="Live numbers from the services Eduard runs on his homelab.">
+<Base title="Live | Eduard Enache" description="Live numbers from the services Eduard runs on his homelab." ground="dark">
   <div class="wrap section" data-scene="live">
-    <h1>Live</h1>
-    <p>Numbers from the services I run at home. When the connection is down you see the last known values.</p>
+    <script is:inline data-astro-rerun>
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.currentScript.parentElement.classList.add('has-motion');
+    </script>
+    <header class="intro">
+      <h1>Live</h1>
+      <p>Numbers from the services I run at home. When the connection is down you see the last known values.</p>
+    </header>
     {blocks.map((b) => (
-      <section class="block" data-live={b.key} data-state="offline" data-scene="live-block">
-        <h2>{b.title}</h2>
-        <p class="mono" data-status>Offline, showing last known values</p>
-        <dl>
-          {b.rows.map(([label, key, fallback, fmt, of]) => (<div><dt class="mono">{label}</dt><dd data-field={key} data-fmt={fmt} data-of={of}>{fallback}</dd></div>))}
+      <section class="block" data-live={b.key} data-state="offline" aria-labelledby={`h-${b.key}`}>
+        <div class="pulse-rail" aria-hidden="true"><span class="line"></span><i class="pulse-run"></i></div>
+        <div class="bhead">
+          <h2 id={`h-${b.key}`}>{b.title}</h2>
+          <p class="mono state"><span class="dot" aria-hidden="true"></span><span data-status role="status">Offline, showing last known values</span></p>
+        </div>
+        <dl class="stats">
+          {b.rows.map(([label, key, fallback, fmt, of]) => (
+            <div class:list={['stat', { wide: fmt === 'list' }]}>
+              <dt class="mono">{label}</dt>
+              <dd data-field={key} data-fmt={fmt} data-of={of}>{fallback}</dd>
+              {fmt === 'pct' && <span class="gauge" aria-hidden="true"><i></i></span>}
+            </div>
+          ))}
         </dl>
         {b.key === 'anuntulcasei' && <p class="mono"><time data-field="last_crawl_at" data-fmt="ago">last crawl: n/a</time></p>}
         {b.key === 'minecraft' && (
-          <div>
+          <div class="mc">
             <h3>Deaths this season</h3>
-            <ol data-board hidden></ol>
+            <ol class="board mono" data-board hidden></ol>
             <p data-empty hidden>No stats yet: nobody has died this season.</p>
             <p><a data-bluemap hidden class="btn" rel="noopener">Open the live map</a></p>
           </div>
@@ -42,16 +57,30 @@ const blocks: { title: string; key: string; rows: Row[] }[] = [
 </Base>
 
 <script>
-  import { hydrateLive } from '../scripts/live';
-  document.addEventListener('astro:page-load', () => hydrateLive());
+  import '../scripts/scenes/live';
 </script>
 
 <style>
-  h1 { font-size: var(--fs-xl); margin-bottom: var(--space-2); }
-  .block { margin-top: var(--space-5); border-top: 1px solid var(--accent); padding-top: var(--space-3); }
-  h2 { font-size: var(--fs-lg); margin-bottom: var(--space-1); }
-  dl { display: flex; flex-wrap: wrap; gap: var(--space-4); margin-top: var(--space-3); }
+  .intro h1 { font-size: var(--fs-xl); margin-bottom: var(--space-2); }
+  .block { margin-top: var(--space-5); }
+  .line { position: absolute; inset: 0 0 auto 0; height: 2px; background: var(--accent); transform-origin: left; }
+  .has-motion .line { transform: scaleX(0); }
+  .bhead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--space-1) var(--space-3); margin-top: var(--space-3); }
+  h2 { font-size: var(--fs-lg); }
+  .state { display: flex; align-items: center; gap: var(--space-1); max-width: none; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); transition: background var(--dur-ui) var(--ease-tide); }
+  [data-state='live'] .dot { background: var(--accent); }
+  [data-state='stale'] .dot { background: transparent; box-shadow: inset 0 0 0 1.5px var(--accent); }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)); gap: var(--space-3) var(--gutter); margin-top: var(--space-3); }
+  .stat { min-width: 0; }
+  .stat.wide { grid-column: 1 / -1; }
+  dd { margin: 0; font-family: var(--font-mono); font-size: var(--fs-lg); line-height: 1.3; font-variant-numeric: tabular-nums; white-space: nowrap; overflow-wrap: normal; }
+  .stat.wide dd { white-space: normal; font-size: var(--fs-md); }
+  .gauge { position: relative; display: block; height: 1px; margin-top: var(--space-1); background: var(--line); }
+  .gauge i { position: absolute; left: 0; top: -1px; width: 100%; height: 3px; background: var(--accent); transform: scaleX(var(--v, 0)); transform-origin: left; transition: transform var(--dur-scene) var(--ease-tide); }
   [hidden] { display: none !important; }
-  h3 { font-size: var(--fs-md); margin: var(--space-3) 0 var(--space-1); }
-  dd { font-family: var(--font-mono); font-size: var(--fs-lg); }
+  .mc h3 { font-size: var(--fs-md); margin: var(--space-4) 0 var(--space-1); }
+  .board { display: grid; gap: 4px; }
+  .mc p { margin-top: var(--space-1); }
+  .block > .mono { margin-top: var(--space-3); }
 </style>

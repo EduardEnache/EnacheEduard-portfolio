@@ -35,13 +35,25 @@
 @keyframes p-up { from { opacity: 0; transform: translateY(var(--space-2)); } }
 @keyframes p-stroke { from { stroke-dashoffset: 1; } }
 
-/* key numbers sit on the line */
+/* key numbers sit on the line: label row and number row are shared per visual row (subgrid), so numbers always share one baseline */
 .p-nums { padding-block: 0; } /* the hero line is the line the numbers sit on */
-.nums { position: relative; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: var(--space-4) var(--gutter); padding-top: var(--space-4); }
-.num-item { position: relative; }
-.num-item::before { content: ''; position: absolute; top: calc(-1 * var(--space-4) - 4px); left: 0; width: 9px; height: 9px; background: var(--accent); }
-.num-item .n { display: block; margin-top: var(--space-1); font-family: var(--font-display); font-stretch: 125%; font-weight: 800; text-transform: uppercase; letter-spacing: -0.02em; line-height: 0.95; font-size: clamp(32px, 5vw, 72px); font-variant-numeric: tabular-nums; }
+.nums { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: var(--gutter); }
+.num-item { position: relative; display: grid; grid-template-rows: subgrid; grid-row: span 2; row-gap: var(--space-1); align-content: start; padding-block: var(--space-3) var(--space-4); }
+.num-item::before { content: ''; position: absolute; top: -4.5px; left: 0; width: 9px; height: 9px; background: var(--accent); } /* on the hero line, or on the hairline of a wrapped row */
+.num-item > .mono { align-self: start; max-width: none; }
+.num-item .n { display: block; align-self: end; font-family: var(--font-display); font-stretch: 125%; font-weight: 800; text-transform: uppercase; letter-spacing: -0.02em; line-height: 0.95; font-size: clamp(32px, 5vw, 72px); font-variant-numeric: tabular-nums; }
 .num-item .n.str { font-size: var(--fs-md); line-height: 1.25; font-stretch: 100%; font-weight: 500; text-transform: none; letter-spacing: 0; }
+.num-item:nth-child(n+5) { border-top: 1px solid var(--line); }
+@media (max-width: 899px) {
+  .nums { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .num-item:nth-child(n+5) { border-top: 0; }
+  .num-item:nth-child(n+3) { border-top: 1px solid var(--line); }
+}
+@media (max-width: 700px) {
+  .nums { grid-template-columns: minmax(0, 1fr); }
+  .num-item:nth-child(n+3) { border-top: 0; }
+  .num-item:nth-child(n+2) { border-top: 1px solid var(--line); }
+}
 
 /* story: one rail, scenes alternate sides */
 .p-story { padding-block: var(--space-6) 0; }

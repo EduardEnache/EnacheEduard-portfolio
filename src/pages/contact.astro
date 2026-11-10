@@ -3,37 +3,97 @@ import Base from '../layouts/Base.astro';
 import { site } from '../data/site';
 
 const endpoint = site.contactEndpoint;
+const fields = [
+  { id: 'name', label: 'Name', type: 'text', autocomplete: 'name' },
+  { id: 'email', label: 'Email', type: 'email', autocomplete: 'email' },
+] as const;
 ---
 <Base title="Contact | Eduard Enache" description="Get in touch with Eduard Enache.">
-  <div class="wrap section grid" data-scene="contact">
-    <div class="col" style="--e:6">
+  <div class="wrap section grid contact">
+    <script is:inline data-astro-rerun>
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.currentScript.parentElement.classList.add('has-motion');
+    </script>
+    <div class="col intro" style="--e:6">
       <h1>Contact</h1>
       <p>Write to me about roles, projects or anything you would like to build.</p>
       <ul class="links">
-        <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
         <li><a href={site.linkedin} rel="me noopener">LinkedIn</a></li>
         <li><a href={site.github} rel="me noopener">GitHub</a></li>
       </ul>
     </div>
-    <form class="col" style="--s:7" data-scene="contact-form"
-      action={endpoint || `mailto:${site.email}`} method="post" enctype={endpoint ? undefined : 'text/plain'}>
-      <label>Name <input name="name" required autocomplete="name" /></label>
-      <label>Email <input name="email" type="email" required autocomplete="email" /></label>
-      <label>Message <textarea name="message" rows="6" required></textarea></label>
-      <label class="hp" aria-hidden="true">Leave empty <input name="website" tabindex="-1" autocomplete="off" /></label>
-      <button class="btn btn-primary" type="submit">Send</button>
-      {!endpoint && <p class="mono">Opens your email app.</p>}
+    <form class="col" style="--s:7" data-scene="contact-form" data-live-form={endpoint ? '' : undefined} action={endpoint || undefined} method={endpoint ? 'post' : undefined}>
+      <fieldset disabled={!endpoint}>
+        <legend class="sr">Message</legend>
+        {fields.map((f, i) => (
+          <div class="field" style={`--i:${i}`}>
+            <label for={`f-${f.id}`}>{f.label}</label>
+            <input id={`f-${f.id}`} name={f.id} type={f.type} required autocomplete={f.autocomplete} aria-describedby={`e-${f.id}`} />
+            <p class="err" id={`e-${f.id}`} role="alert"></p>
+          </div>
+        ))}
+        <div class="field" style="--i:2">
+          <label for="f-message">Message</label>
+          <textarea id="f-message" name="message" rows="5" required aria-describedby="e-message"></textarea>
+          <p class="err" id="e-message" role="alert"></p>
+        </div>
+        <p class="hp" aria-hidden="true"><label>Leave empty <input name="website" tabindex="-1" autocomplete="off" /></label></p>
+      </fieldset>
+      {endpoint ? (
+        <div class="actions" style="--i:3">
+          <button class="btn btn-primary" type="submit">Send</button>
+          <p class="mono status" role="status" data-status></p>
+        </div>
+      ) : (
+        <p class="notice" style="--i:3"><strong>The form is not connected yet.</strong> Until it is, write to me on <a href={site.linkedin} rel="me noopener">LinkedIn</a> or <a href={site.github} rel="me noopener">GitHub</a>.</p>
+      )}
+      <div class="done" tabindex="-1" role="status" hidden>
+        <h2>Sent</h2>
+        <p>Thank you. I will reply as soon as I can.</p>
+      </div>
     </form>
   </div>
 </Base>
 
+<script>
+  import '../scripts/scenes/contact';
+</script>
+
 <style>
   h1 { font-size: var(--fs-xl); margin-bottom: var(--space-3); }
-  .links { margin-top: var(--space-3); display: grid; gap: var(--space-1); }
-  form { display: grid; gap: var(--space-2); align-content: start; }
-  label { display: grid; gap: 4px; font-size: var(--fs-sm); }
-  input, textarea { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; }
+  .links { margin-top: var(--space-3); border-top: 1px solid var(--line); max-width: 360px; }
+  .links li { border-bottom: 1px solid var(--line); }
+  .links a { display: flex; align-items: center; min-height: 56px; font-size: var(--fs-md); text-decoration: none; }
+  form { align-content: start; position: relative; }
+  fieldset { border: 0; padding: 0; min-width: 0; display: grid; gap: var(--space-3); }
+  fieldset:disabled { opacity: 0.55; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  /* the field underline is the horizon line: a hairline at rest, drawn in gold-brown on focus */
+  .field { position: relative; display: grid; gap: 4px; padding-bottom: 2px; }
+  .field::before { content: ''; position: absolute; inset: auto 0 0 0; height: 1px; background: var(--line); }
+  .field::after { content: ''; position: absolute; inset: auto 0 0 0; height: 2px; background: var(--accent-text); transform: scaleX(0); transform-origin: left; transition: transform var(--dur-ui) var(--ease-tide); }
+  .field:focus-within::after, .field:has([aria-invalid='true'])::after { transform: scaleX(1); }
+  label { font-family: var(--font-mono); font-size: var(--fs-xs); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .field:focus-within label { color: var(--accent-text); }
+  input, textarea { width: 100%; min-height: 48px; padding: 8px 0; background: transparent; border: 0; border-radius: 0; outline: none; font-size: var(--fs-md); }
+  textarea { resize: vertical; min-height: 140px; line-height: 1.4; }
+  .err { min-height: 0; margin: 0; font-size: var(--fs-sm); color: var(--accent-text); }
   .hp { position: absolute; left: -9999px; }
-  button { justify-self: start; cursor: pointer; }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-top: var(--space-3); }
+  button { cursor: pointer; }
+  button[disabled] { cursor: progress; opacity: 0.7; }
+  .status { max-width: 48ch; }
+  .status[data-kind='failed'] { color: var(--accent-text); }
+  .notice { margin-top: var(--space-3); padding-top: var(--space-2); border-top: 1px solid var(--accent-text); max-width: 48ch; }
+  .notice a { display: inline-flex; align-items: center; min-height: 44px; }
+  .done h2 { font-size: var(--fs-lg); margin-bottom: var(--space-1); }
+  .done:focus { outline: none; }
+  [hidden] { display: none !important; }
+  /* with a sent message the fields and button give way to the confirmation */
+  form[data-state='sent'] > :not(.done) { display: none; }
   @media (max-width: 700px) { form { margin-top: var(--space-4); } }
+
+  .contact { position: relative; }
+  .has-motion .intro, .has-motion .field, .has-motion .actions, .has-motion .notice { animation: c-up var(--dur-reveal) var(--ease-tide) both; animation-delay: calc(var(--i, 0) * var(--stagger)); }
+  .has-motion .links { animation: c-up var(--dur-reveal) var(--ease-tide) both; animation-delay: calc(var(--stagger) * 2); }
+  @keyframes c-up { from { opacity: 0; transform: translateY(var(--space-2)); } }
 </style>

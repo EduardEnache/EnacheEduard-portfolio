@@ -9,6 +9,8 @@ import '@fontsource/schibsted-grotesk/500.css';
 import '@fontsource/martian-mono/400.css';
 import '../styles/tokens.css';
 import '../styles/base.css';
+import '../components/shell/shell.css';
+import { wipeCss } from '../components/shell/wipe';
 import archivoLatin from '@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url';
 
 interface Props {
@@ -36,6 +38,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
     <meta property="og:url" content={canonical} />
     {image && <meta property="og:image" content={image} />}
     <meta name="twitter:card" content="summary_large_image" />
+    <style is:inline set:html={wipeCss()}></style>
     <ClientRouter />
   </head>
   <body class={ground === 'dark' ? 'ground-water' : 'ground-haze'}>
@@ -43,8 +46,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url);
     <Header />
     <main id="main"><slot /></main>
     <Footer />
+    <div class="wipe-line" aria-hidden="true"></div>
     <script>
       import '../scripts/motion';
+      import '../scripts/scenes/transitions';
     </script>
   </body>
 </html>

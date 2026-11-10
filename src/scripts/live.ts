@@ -39,6 +39,7 @@ function format(el: HTMLElement, d: Data): string | null {
 
 function fill(block: HTMLElement, d: Data) {
   block.querySelectorAll<HTMLElement>('[data-field]').forEach((el) => {
+    el.dataset.prev = el.textContent ?? ''; // lets a scene tick from the old value to the new one
     if (el.dataset.fmt === 'ago') { // relative time inside a <time datetime>
       const iso = typeof d[el.dataset.field!] === 'string' ? (d[el.dataset.field!] as string) : '';
       if (iso && el instanceof HTMLTimeElement) { el.dateTime = iso; el.textContent = `crawled ${ago(iso)}`; return; }
@@ -68,13 +69,16 @@ function fill(block: HTMLElement, d: Data) {
 
   block.dataset.state = d.stale ? 'stale' : 'live';
   block.querySelector('[data-status]')!.textContent = d.stale ? 'Last known values' : 'Live';
+  block.dispatchEvent(new CustomEvent('live:fill', { detail: { state: block.dataset.state } }));
 }
 
-export async function hydrateLive(root: ParentNode = document) {
+/** Fills every [data-live] block under root; resolves true when the API answered, false when the fallback stays. */
+export async function hydrateLive(root: ParentNode = document): Promise<boolean> {
   const all = await fetchLive();
-  if (!all) return;
+  if (!all) return false;
   root.querySelectorAll<HTMLElement>('[data-live]').forEach((block) => {
     const d = all[block.dataset.live!];
     if (d) fill(block, d);
   });
+  return true;
 }
