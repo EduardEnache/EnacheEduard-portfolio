@@ -1,0 +1,39 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+
+const endpoint = site.contactEndpoint;
+---
+<Base title="Contact | Eduard Enache" description="Get in touch with Eduard Enache.">
+  <div class="wrap section grid" data-scene="contact">
+    <div class="col" style="--e:6">
+      <h1>Contact</h1>
+      <p>Write to me about roles, projects or anything you would like to build.</p>
+      <ul class="links">
+        <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+        <li><a href={site.linkedin} rel="me noopener">LinkedIn</a></li>
+        <li><a href={site.github} rel="me noopener">GitHub</a></li>
+      </ul>
+    </div>
+    <form class="col" style="--s:7" data-scene="contact-form"
+      action={endpoint || `mailto:${site.email}`} method="post" enctype={endpoint ? undefined : 'text/plain'}>
+      <label>Name <input name="name" required autocomplete="name" /></label>
+      <label>Email <input name="email" type="email" required autocomplete="email" /></label>
+      <label>Message <textarea name="message" rows="6" required></textarea></label>
+      <label class="hp" aria-hidden="true">Leave empty <input name="website" tabindex="-1" autocomplete="off" /></label>
+      <button class="btn btn-primary" type="submit">Send</button>
+      {!endpoint && <p class="mono">Opens your email app.</p>}
+    </form>
+  </div>
+</Base>
+
+<style>
+  h1 { font-size: var(--fs-xl); margin-bottom: var(--space-3); }
+  .links { margin-top: var(--space-3); display: grid; gap: var(--space-1); }
+  form { display: grid; gap: var(--space-2); align-content: start; }
+  label { display: grid; gap: 4px; font-size: var(--fs-sm); }
+  input, textarea { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; }
+  .hp { position: absolute; left: -9999px; }
+  button { justify-self: start; cursor: pointer; }
+  @media (max-width: 700px) { form { margin-top: var(--space-4); } }
+</style>

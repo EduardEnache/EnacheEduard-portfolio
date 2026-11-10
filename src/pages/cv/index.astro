@@ -1,0 +1,59 @@
+---
+import { getEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { site } from '../../data/site';
+
+const cv = (await getEntry('cv', 'cv'))!.data;
+---
+<Base title="CV | Eduard Enache" description="Experience, education, skills and certifications of Eduard Enache.">
+  <div class="wrap section" data-scene="cv">
+    <header>
+      <h1>CV</h1>
+      <p><a class="btn btn-primary" href={site.cvPdf}>Download CV</a></p>
+    </header>
+
+    <section data-scene="cv-timeline" aria-labelledby="exp">
+      <h2 id="exp">Experience</h2>
+      <ol class="timeline">
+        {cv.roles.map((r) => (
+          <li><span class="mono">{r.start} to {r.end}</span><h3>{r.title}</h3><p>{r.org}{r.place && `, ${r.place}`}</p></li>
+        ))}
+      </ol>
+    </section>
+
+    <section data-scene="cv-education" aria-labelledby="edu">
+      <h2 id="edu">Education</h2>
+      <ol class="timeline">
+        {cv.education.map((e) => (
+          <li><span class="mono">{e.start} to {e.end}</span><h3>{e.title}</h3><p>{e.org}</p>{e.detail && <p>{e.detail}</p>}</li>
+        ))}
+      </ol>
+    </section>
+
+    <section data-scene="cv-skills" aria-labelledby="skills">
+      <h2 id="skills">Skills</h2>
+      <dl class="skills">
+        {cv.skills.map((g) => (<div><dt class="mono">{g.group}</dt><dd>{g.items.join(', ')}</dd></div>))}
+      </dl>
+    </section>
+
+    <section data-scene="cv-certs" aria-labelledby="certs">
+      <h2 id="certs">Certifications</h2>
+      <ul class="certs">{cv.certifications.map((c) => <li>{c}</li>)}</ul>
+      <p class="mono">{cv.languages.map((l) => `${l.name}: ${l.level}`).join(' / ')}</p>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .wrap > * + * { margin-top: var(--space-5); }
+  header p { margin-top: var(--space-3); }
+  h2 { font-size: var(--fs-xl); margin-bottom: var(--space-3); }
+  /* the timeline connector is the horizon line turned vertical */
+  .timeline { border-left: 1px solid var(--accent); padding-left: var(--space-3); display: grid; gap: var(--space-4); }
+  .timeline h3 { margin-block: 4px; }
+  .skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: var(--space-3) var(--gutter); }
+  .skills div { border-top: 1px solid var(--line); padding-top: var(--space-1); }
+  .certs { display: flex; flex-wrap: wrap; gap: var(--space-1); margin-bottom: var(--space-2); }
+  .certs li { border: 1px solid var(--line); padding: 4px 12px; font-size: var(--fs-sm); }
+</style>

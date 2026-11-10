@@ -1,0 +1,76 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const all = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+  return all.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: { entry, next: all[(i + 1) % all.length] },
+  }));
+}
+
+const { entry, next } = Astro.props;
+const { data } = entry;
+const { Content } = await render(entry);
+const images = import.meta.glob<ImageMetadata>('/design/assets/projects/*/*.webp', { eager: true, import: 'default' });
+const shots = data.screenshots.map((s) => ({ src: images[`/design/assets/projects/${s}`], name: s })).filter((s) => s.src);
+---
+<Base title={`${data.title} | Eduard Enache`} description={data.tagline}>
+  <article class="wrap section" data-scene="project">
+    <header class="grid" data-scene="project-hero">
+      <div class="col" style="--e:10">
+        <p class="mono">{String(data.order).padStart(2, '0')} / {data.status} / {data.year}</p>
+        <h1>{data.title}</h1>
+        <p class="tagline">{data.tagline}</p>
+        {data.url && <p><a class="btn" href={data.url} rel="noopener">Visit {new URL(data.url).host}</a></p>}
+      </div>
+    </header>
+
+    <section class="grid" data-scene="project-facts" aria-label="Key facts">
+      <dl class="col facts" style="--e:8">
+        {data.facts.map((f) => (<div><dt class="mono">{f.label}</dt><dd>{f.value}</dd></div>))}
+      </dl>
+    </section>
+
+    <section class="grid" data-scene="project-body">
+      <div class="col prose" style="--e:8"><Content /></div>
+    </section>
+
+    <section class="grid" data-scene="project-stack" aria-labelledby="stack">
+      <div class="col" style="--e:8">
+        <h2 id="stack">Stack</h2>
+        {data.stack.map((g) => (<p><span class="mono">{g.group}</span><br />{g.items.join(', ')}</p>))}
+      </div>
+    </section>
+
+    {shots.length > 0 && (
+      <section class="shots" data-scene="project-shots" aria-label="Screenshots">
+        {shots.map((s) => (
+          <Image src={s.src} alt={`${data.title} screenshot`} widths={[560, 1000, 1600]} sizes="(max-width: 700px) 100vw, 45vw" loading="lazy" />
+        ))}
+      </section>
+    )}
+
+    <nav class="next" data-scene="project-next" aria-label="Next project">
+      <hr class="horizon" />
+      <a href={`/work/${next.id}/`}><span class="mono">Next project</span><span class="title">{next.data.title}</span></a>
+    </nav>
+  </article>
+</Base>
+
+<style>
+  article > * + * { margin-top: var(--space-5); }
+  h1 { font-size: clamp(48px, 9vw, 128px); margin-block: var(--space-2); }
+  .tagline { font-size: var(--fs-md); line-height: 1.35; margin-bottom: var(--space-3); }
+  h2 { font-size: var(--fs-lg); margin-bottom: var(--space-2); }
+  .facts { display: grid; gap: var(--space-2); }
+  .facts div { border-top: 1px solid var(--line); padding-top: var(--space-1); }
+  .facts dd { font-size: var(--fs-md); }
+  .prose :global(p) + :global(p) { margin-top: var(--space-2); }
+  .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: var(--gutter); align-items: start; }
+  .shots img { width: 100%; border: 1px solid var(--line); }
+  .next a { display: block; padding-block: var(--space-3); text-decoration: none; }
+  .next .title { display: block; font-family: var(--font-display); font-stretch: 125%; font-weight: 800; text-transform: uppercase; font-size: var(--fs-xl); line-height: 1; }
+</style>

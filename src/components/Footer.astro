@@ -1,0 +1,16 @@
+---
+import { site } from '../data/site';
+---
+<footer class="site-footer wrap ground-water" data-scene="footer">
+  <p class="mono">{site.name} / {site.coordinates}</p>
+  <ul>
+    <li><a href={site.linkedin} rel="me noopener">LinkedIn</a></li>
+    <li><a href={site.github} rel="me noopener">GitHub</a></li>
+    <li><a href="/contact/">Contact</a></li>
+  </ul>
+</footer>
+<style>
+  .site-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-2); padding-block: var(--space-4); border-top: 1px solid var(--accent); }
+  ul { display: flex; gap: var(--space-3); }
+  a { font-size: var(--fs-sm); }
+</style>

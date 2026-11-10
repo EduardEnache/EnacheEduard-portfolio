@@ -1,0 +1,38 @@
+---
+import Base from '../layouts/Base.astro';
+
+// Static fallbacks (last known values). Replaced at runtime when PUBLIC_API_BASE answers.
+const blocks = [
+  { title: 'Homelab health', path: '/health', rows: [['Stacks running', 'stacks', 'n/a'], ['Uptime', 'uptime', 'n/a']] },
+  { title: 'AnunțulCasei', path: '/anuntulcasei', rows: [['Active listings', 'listings', '~122k'], ['Unique properties', 'properties', '~67k']] },
+  { title: 'Minecraft', path: '/minecraft', rows: [['Players online', 'online', 'n/a'], ['Deaths on the board', 'deaths', 'n/a']] },
+];
+---
+<Base title="Live | Eduard Enache" description="Live numbers from the services Eduard runs on his homelab.">
+  <div class="wrap section" data-scene="live">
+    <h1>Live</h1>
+    <p>Numbers from the services I run at home. When the connection is down you see the last known values.</p>
+    {blocks.map((b) => (
+      <section class="block" data-live={b.path} data-state="offline" data-scene="live-block">
+        <h2>{b.title}</h2>
+        <p class="mono" data-status>Offline, showing last known values</p>
+        <dl>
+          {b.rows.map(([label, key, fallback]) => (<div><dt class="mono">{label}</dt><dd data-field={key}>{fallback}</dd></div>))}
+        </dl>
+      </section>
+    ))}
+  </div>
+</Base>
+
+<script>
+  import { hydrateLive } from '../scripts/live';
+  document.addEventListener('astro:page-load', () => hydrateLive());
+</script>
+
+<style>
+  h1 { font-size: var(--fs-xl); margin-bottom: var(--space-2); }
+  .block { margin-top: var(--space-5); border-top: 1px solid var(--accent); padding-top: var(--space-3); }
+  h2 { font-size: var(--fs-lg); margin-bottom: var(--space-1); }
+  dl { display: flex; flex-wrap: wrap; gap: var(--space-4); margin-top: var(--space-3); }
+  dd { font-family: var(--font-mono); font-size: var(--fs-lg); }
+</style>

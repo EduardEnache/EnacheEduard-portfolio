@@ -152,3 +152,4 @@ dist/
 .env
 .env.*
 !.env.example
+*.b64
