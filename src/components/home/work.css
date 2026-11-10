@@ -5,7 +5,7 @@
   --cw: clamp(128px, 14vw, 224px); --ch: calc(var(--cw) * 1.333);
   --rh: clamp(150px, 19vw, 300px); --R: calc(var(--rh) + 22px);
   --fan-step: 24deg; --fan-limit: 66deg; --fan-lift: 30px; --pin-len: 385svh;
-  color: var(--paper); padding-block: var(--space-5);
+  color: var(--paper); padding-block: var(--space-5); border-bottom: 2px solid var(--accent); /* the horizon the fan ends on */
 }
 .lab { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-1) var(--space-2); max-width: none; color: var(--sky-300); }
 .hint-motion { display: none; }
@@ -45,7 +45,8 @@
 @media (hover: hover) { .card:hover .in { border-color: var(--accent); } }
 
 /* motion: sticky stage, arc of cards around the hub */
-.has-motion .work { padding-block: 0; }
+.has-motion .work { padding-block: 0; border-bottom: 0; }
+.has-motion .fan-stage::after { content: ''; position: absolute; z-index: 4; left: 0; right: 0; bottom: 0; height: 2px; background: var(--accent); pointer-events: none; } /* stays on the stage's flat edge while pinned and at release */
 .has-motion .fan-track { height: calc(100svh + var(--pin-len)); }
 .has-motion .fan-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; }
 .has-motion .work-top { position: absolute; z-index: 3; top: 0; left: 0; right: 0; padding-top: clamp(24px, 5vh, 48px); }

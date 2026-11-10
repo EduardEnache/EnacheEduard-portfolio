@@ -30,10 +30,13 @@ const facts = [
   <Join from="haze-100" to="water-900" />
   <Work projects={projects} />
 
-  <section class="cta-band section wrap ground-water" data-scene="contact-cta">
-    <h2>Let's talk</h2>
-    <p>Open to QA, data and platform roles, and to interesting collaborations.</p>
-    <p><a class="btn btn-primary" href="/contact/">Get in touch</a></p>
+  <section class="cta-band ground-slate" data-scene="contact-cta">
+    <div class="wrap section">
+      <p class="lab mono">Contact</p>
+      <h2>Let's talk</h2>
+      <p>Open to QA, data and platform roles, and to interesting collaborations.</p>
+      <p><a class="btn btn-primary" href="/contact/">Get in touch</a></p>
+    </div>
   </section>
   </div>
 </Base>
@@ -44,6 +47,10 @@ const facts = [
 </script>
 
 <style>
+  /* the hero's slate sky: its own surface, so the fan's gold horizon reads as the end of the section above */
+  .ground-slate { --ground: var(--sky-700); --ink: var(--paper); --muted: var(--paper); --line: var(--sky-500); background: var(--ground); color: var(--ink); }
+  .cta-band .lab { justify-content: flex-start; color: var(--paper); }
+  .cta-band h2 { margin-block: var(--space-3) var(--space-2); }
   .cta-band p { margin-bottom: var(--space-3); }
   .cta-band .btn { color: var(--water-900); }
 </style>
