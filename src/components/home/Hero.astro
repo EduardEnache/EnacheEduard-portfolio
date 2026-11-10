@@ -1,0 +1,49 @@
+---
+import { Picture } from 'astro:assets';
+import { site } from '../../data/site';
+import portrait from '../../../design/assets/photo/eduard-dusk-copenhagen.webp';
+
+const lines = site.name.split(' ');
+let n = 0;
+---
+<section class="hero" id="top" aria-label="Introduction">
+  <div class="water" aria-hidden="true"></div>
+  <figure class="portrait">
+    <div class="shot">
+      <Picture
+        src={portrait}
+        alt="Eduard Enache standing by the harbour in Copenhagen at dusk"
+        formats={['avif', 'webp']}
+        fallbackFormat="webp"
+        width={1080}
+        height={1440}
+        widths={[480, 720, 1080, 1440]}
+        sizes="(max-width: 700px) 100vw, 75vh"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+      />
+      <span class="veil" aria-hidden="true"></span>
+    </div>
+  </figure>
+  <hr class="horizon" />
+  <div class="above">
+    <h1 aria-label={site.name}>
+      {lines.map((w) => (
+        <span class="line" aria-hidden="true">
+          {[...w].map((c) => <span class="cm"><span class="ch" style={`--i:${n++}`}>{c}</span></span>)}
+        </span>
+      ))}
+    </h1>
+    <p class="role reveal" style="--i:0">{site.role}<span class="mono">{site.org}</span></p>
+  </div>
+  <div class="below">
+    <p class="pitch reveal" style="--i:1">{site.pitch}</p>
+    <p class="sub reveal" style="--i:2">{site.subline}</p>
+    <p class="cta">
+      <a class="btn btn-primary reveal" style="--i:3" href="#work">See the work</a>
+      <a class="btn reveal" style="--i:4" href={site.cvPdf}>Download CV</a>
+      <a class="btn reveal" style="--i:5" href="/contact/">Get in touch</a>
+    </p>
+  </div>
+</section>

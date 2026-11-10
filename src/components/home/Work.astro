@@ -1,0 +1,38 @@
+---
+import Card from './Card.astro';
+import { shotsOf } from './shots';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props { projects: CollectionEntry<'projects'>[] }
+const { projects } = Astro.props;
+const first = projects[0];
+---
+<section id="work" class="work ground-water" data-scene="fan" aria-labelledby="work-title">
+  <div class="fan-track">
+    <div class="fan-stage">
+      <div class="work-top wrap">
+        <p class="lab mono"><span>Selected work, {projects.length} projects</span><span class="hint-motion">Scroll or drag to rotate</span><span class="hint-static">Scroll sideways</span></p>
+        <h2 class="kn" id="work-title">
+          <span class="slot"><span class="col">
+            <span class="row s">Projects</span>
+            <span class="row o" aria-hidden="true">Projects</span>
+            <span class="row s" aria-hidden="true">Projects</span>
+          </span></span>
+        </h2>
+      </div>
+      <div class="fan-zone">
+        <ol class="fan" aria-label="Projects">
+          {projects.map((p, i) => (
+            <Card slug={p.id} index={i} title={p.data.title} tagline={p.data.tagline} status={p.data.status} year={p.data.year} shots={shotsOf(p.data.screenshots)} />
+          ))}
+        </ol>
+        <div class="hub" aria-live="polite" aria-atomic="true">
+          <span class="mono h-idx">01 / {String(projects.length).padStart(2, '0')}</span>
+          <span class="h-name">{first.data.title}</span>
+          <span class="h-desc">{first.data.tagline}</span>
+          <span class="mono h-stat">{first.data.status} / {first.data.year}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

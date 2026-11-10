@@ -1,0 +1,42 @@
+---
+import { Image } from 'astro:assets';
+import { artFor, drawable } from './art';
+import type { CardShot } from './shots';
+
+interface Props { slug: string; index: number; title: string; tagline: string; status: string; year: number; shots: CardShot[] }
+const { slug, index, title, tagline, status, year, shots } = Astro.props;
+const n = String(index + 1).padStart(2, '0');
+const art = artFor(slug);
+const [first, second] = shots;
+---
+<li class="spoke" style={`--i:${index}`}>
+  <a
+    class:list={['card', { on: index === 0 }]}
+    href={`/work/${slug}/`}
+    data-name={title}
+    data-desc={tagline}
+    data-stat={`${status} / ${year}`}
+    aria-label={`${n} ${title}, ${status} ${year}`}
+  >
+    <span class="in">
+      {first ? (
+        <span class="fa">
+          <Image src={first.src} alt="" widths={[320, 480]} sizes="(max-width: 700px) 50vw, 14vw" loading="lazy" draggable="false" transition:name={`shot-${slug}`} />
+        </span>
+      ) : (
+        <span class={`fa t ${art.theme}`}>
+          <svg class="dr" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.2" set:html={drawable(art.svg)} />
+          <span class="num" aria-hidden="true">{n}</span>
+          <span class="tn">{title}</span>
+        </span>
+      )}
+      {second ? (
+        <span class="fb"><Image src={second.src} alt="" widths={[320, 480]} sizes="(max-width: 700px) 50vw, 14vw" loading="lazy" draggable="false" /></span>
+      ) : !first ? (
+        <span class="fb ta"><span class="tn o">{title}</span></span>
+      ) : null}
+      <span class="band"><span>{n}</span><span>{status}</span></span>
+    </span>
+    <span class="cap"><b>{title}</b><span>{tagline}</span><i>{status} / {year}</i></span>
+  </a>
+</li>

@@ -1,0 +1,17 @@
+---
+interface Fact { label: string; value: string; note: string }
+interface Props { facts: Fact[] }
+const { facts } = Astro.props;
+---
+<section class="strip wrap ground-haze" aria-label="At a glance">
+  <ul class="track">
+    <li class="sl" aria-hidden="true"></li>
+    {facts.map((f) => (
+      <li class="fact">
+        <span class="mono">{f.label}</span>
+        <span class="v">{f.value}</span>
+        <p>{f.note}</p>
+      </li>
+    ))}
+  </ul>
+</section>

@@ -1,120 +1,48 @@
 ---
-import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import Hero from '../components/home/Hero.astro';
+import Facts from '../components/home/Facts.astro';
+import Join from '../components/home/Join.astro';
+import Work from '../components/home/Work.astro';
+import { ditherCss } from '../components/home/masks';
 import { site } from '../data/site';
-import portrait from '../../design/assets/photo/eduard-dusk-copenhagen.webp';
+import '../components/home/hero.css';
+import '../components/home/work.css';
 
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 const facts = [
-  { label: 'Now', value: `${site.role}, ${site.org}` },
-  { label: 'Study', value: 'MSc Mobile Communications, 6G thesis 10/10' },
-  { label: 'Built', value: `${projects.length} projects, one self-run homelab` },
+  { label: 'Now', value: site.role, note: site.org },
+  { label: 'MSc Mobile Communications', value: '9.14 / 10', note: site.subline },
+  { label: 'Built', value: `${projects.length} projects`, note: 'From the scraper to the monitoring, most of them live.' },
 ];
 ---
 <Base>
-  <section class="hero grid wrap" data-scene="hero">
-    <div class="band sky ground-sky" aria-hidden="true"></div>
-    <div class="band water ground-water" aria-hidden="true"></div>
-    <hr class="horizon" data-scene="horizon" />
-    <div class="above col ground-sky" style="--e:8">
-      <p class="mono">{site.role}, {site.org}</p>
-      <h1>{site.name}</h1>
-    </div>
-    <div class="below col ground-water" style="--e:8">
-      <p class="pitch">{site.pitch}</p>
-      <p class="mono">{site.subline}</p>
-      <p class="cta">
-        <a class="btn btn-primary" href="#work">See the work</a>
-        <a class="btn" href={site.cvPdf}>Download CV</a>
-        <a class="btn" href="/contact/">Get in touch</a>
-      </p>
-    </div>
-    <figure class="portrait col ground-water" style="--s:8" data-scene="portrait">
-      <Image
-        src={portrait}
-        alt="Eduard Enache standing by the harbour in Copenhagen at dusk"
-        widths={[480, 800, 1200]}
-        sizes="(max-width: 700px) 100vw, 40vw"
-        loading="eager"
-        fetchpriority="high"
-        format="webp"
-      />
-    </figure>
-  </section>
-
-  <section class="strip wrap ground-haze" data-scene="facts" aria-label="At a glance">
-    <ul class="grid">
-      {facts.map((f) => (
-        <li class="col" style="--e:5">
-          <span class="mono">{f.label}</span>
-          <p>{f.value}</p>
-        </li>
-      ))}
-    </ul>
-  </section>
-
-  <section id="work" class="section wrap" data-scene="portfolio">
-    <h2>Projects</h2>
-    <ol class="projects" data-scene="project-list">
-      {projects.map((p) => (
-        <li data-project={p.id}>
-          <a href={`/work/${p.id}/`}>
-            <span class="mono">{String(p.data.order).padStart(2, '0')}</span>
-            <span class="name">{p.data.title}</span>
-            <span class="tag">{p.data.tagline}</span>
-            <span class="mono">{p.data.status} / {p.data.year}</span>
-          </a>
-        </li>
-      ))}
-    </ol>
-  </section>
+  <div class="home">
+  <!-- motion layer switch: set on the page's own wrapper so it survives view transitions; no script, no class, static page -->
+  <script is:inline data-astro-rerun>
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.currentScript.parentElement.classList.add('has-motion');
+  </script>
+  <style is:inline set:html={ditherCss()}></style>
+  <Hero />
+  <Join from="water-900" to="haze-100" />
+  <Facts facts={facts} />
+  <Join from="haze-100" to="water-900" />
+  <Work projects={projects} />
 
   <section class="cta-band section wrap ground-water" data-scene="contact-cta">
     <h2>Let's talk</h2>
     <p>Open to QA, data and platform roles, and to interesting collaborations.</p>
     <p><a class="btn btn-primary" href="/contact/">Get in touch</a></p>
   </section>
+  </div>
 </Base>
 
+<script>
+  import '../scripts/scenes/fan';
+</script>
+
 <style>
-  .hero { position: relative; padding-inline: var(--margin); isolation: isolate; }
-  .band { position: absolute; left: 0; right: 0; z-index: -1; }
-  .sky { top: 0; bottom: 50%; }
-  .water { top: 50%; bottom: 0; }
-  .horizon { position: absolute; left: 0; top: 50%; z-index: 1; }
-  .hero h1 { font-size: clamp(48px, 8vw, 128px); margin-top: var(--space-1); }
-  .above { grid-row: 1; padding-block: var(--space-5) var(--space-4); align-self: end; background: none; }
-  .below { grid-row: 2; padding-block: var(--space-4) var(--space-5); background: none; }
-  .pitch { font-size: var(--fs-md); line-height: 1.35; margin-bottom: var(--space-2); }
-  .cta { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); max-width: none; }
-  .portrait { grid-row: 1 / 3; align-self: end; z-index: 2; background: none; }
-  .portrait img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: top; }
-  /* phones: two flat bands stacked, gold line between them */
-  @media (max-width: 700px) {
-    .hero { padding-inline: 0; }
-    .band, .horizon { display: none; }
-    .above, .below, .portrait { padding-inline: var(--margin); }
-    .above { background: var(--ground); padding-block: var(--space-4); }
-    .below { background: var(--ground); border-top: 1px solid var(--accent); padding-block: var(--space-4) var(--space-3); }
-    .portrait { grid-row: 3; background: var(--ground); padding-bottom: var(--space-4); }
-  }
-
-  .strip { padding-block: var(--space-4); }
-  .strip ul { row-gap: var(--space-3); }
-  .strip p { margin-top: 4px; }
-
-  h2 { margin-bottom: var(--space-4); }
-  .projects li { border-top: 1px solid var(--line); }
-  .projects a {
-    display: grid; grid-template-columns: 4ch 1fr; gap: 4px var(--gutter);
-    padding-block: var(--space-3); text-decoration: none;
-  }
-  .projects .name { font-family: var(--font-display); font-stretch: 125%; font-weight: 800; text-transform: uppercase; font-size: var(--fs-lg); line-height: 1; }
-  .projects .tag, .projects a > .mono:last-child { grid-column: 2; }
-  @media (min-width: 900px) {
-    .projects a { grid-template-columns: 4ch 1fr 1.4fr 16ch; align-items: baseline; }
-    .projects .tag, .projects a > .mono:last-child { grid-column: auto; }
-  }
   .cta-band p { margin-bottom: var(--space-3); }
+  .cta-band .btn { color: var(--water-900); }
 </style>

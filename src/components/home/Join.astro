@@ -1,0 +1,6 @@
+---
+/** Flat band to flat band through an ordered dither (a CSS mask, no canvas, no layout shift). */
+interface Props { from: string; to: string }
+const { from, to } = Astro.props;
+---
+<div class="join" aria-hidden="true" style={`--from:var(--${from});--to:var(--${to})`}></div>
