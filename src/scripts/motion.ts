@@ -20,13 +20,19 @@ const scenes = new Map<string, Init>();
 /** Register a scene. It runs on every page load that contains [data-scene="name"], inside a gsap.context. */
 export function scene(name: string, init: Init) {
   scenes.set(name, init);
+  // registered after this page already started (code loads when idle): run it now, inside the page's context
+  if (ctx) ctx.add(() => document.querySelectorAll<HTMLElement>(`[data-scene="${name}"]`).forEach(init));
 }
 
 let ctx: gsap.Context | undefined;
 let lenis: Lenis | undefined;
 const tick = (t: number) => lenis?.raf(t * 1000);
 
+/** Back/forward: the browser restores scroll before the pinned layouts exist and clamps it, so put it back once they do. */
+let traversal = false;
+
 function start() {
+  if (ctx) return;
   if (!matchMedia(conditions.reduce).matches) {
     lenis = new Lenis();
     lenis.on('scroll', ScrollTrigger.update);
@@ -38,6 +44,15 @@ function start() {
       document.querySelectorAll<HTMLElement>(`[data-scene="${name}"]`).forEach(init);
     });
   });
+  if (traversal) {
+    traversal = false;
+    const y = history.state?.scrollY;
+    if (typeof y === 'number' && y > 0) {
+      ScrollTrigger.refresh();
+      window.scrollTo({ top: y, behavior: 'instant' });
+      lenis?.scrollTo(y, { immediate: true, force: true });
+    }
+  }
 }
 
 function stop() {
@@ -49,5 +64,8 @@ function stop() {
   lenis = ctx = undefined;
 }
 
+document.addEventListener('astro:before-preparation', (e) => { traversal = e.direction === 'back' || e.direction === 'forward'; });
 document.addEventListener('astro:page-load', start);
 document.addEventListener('astro:before-swap', stop);
+// this module loads after the first astro:page-load already fired: start once the scenes that came with it have registered
+setTimeout(() => { if (document.readyState === 'complete') start(); }, 0);

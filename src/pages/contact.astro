@@ -55,7 +55,8 @@ const fields = [
 </Base>
 
 <script>
-  import '../scripts/scenes/contact';
+  import { later } from '../scripts/idle';
+  later(() => import('../scripts/scenes/contact'));
 </script>
 
 <style>

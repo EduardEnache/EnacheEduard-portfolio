@@ -13,6 +13,7 @@ scene('project', (el) => {
 
     el.querySelectorAll<HTMLElement>('.n[data-to]').forEach((n) => {
       const to = Number(n.dataset.to), d = decimals(to), o = { v: 0 };
+      if (n.getBoundingClientRect().top < innerHeight) return; // already on screen (late script): keep the server-rendered value
       const show = () => { n.textContent = `${n.dataset.pre ?? ''}${o.v.toLocaleString('en', { minimumFractionDigits: d, maximumFractionDigits: d })}${n.dataset.suf ?? ''}`; };
       show();
       gsap.to(o, { v: to, duration: dur('scene'), ease: ease('tide'), onUpdate: show, scrollTrigger: { trigger: n, start: 'top 90%', once: true } });

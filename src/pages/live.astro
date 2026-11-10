@@ -26,12 +26,15 @@ const blocks: { title: string; key: string; rows: Row[] }[] = [
       <h1>Live</h1>
       <p>Numbers from the services I run at home. When the connection is down you see the last known values.</p>
     </header>
-    {blocks.map((b) => (
-      <section class="block" data-live={b.key} data-state="offline" aria-labelledby={`h-${b.key}`}>
+    {blocks.map((b) => {
+      // honest offline label: "last known values" only where a stored fallback exists
+      const offline = b.rows.some((r) => r[2] !== 'n/a') ? 'Offline, last known values' : 'Offline';
+      return (
+      <section class="block" data-live={b.key} data-state="offline" data-offline={offline} aria-labelledby={`h-${b.key}`}>
         <div class="pulse-rail" aria-hidden="true"><span class="line"></span><i class="pulse-run"></i></div>
         <div class="bhead">
           <h2 id={`h-${b.key}`}>{b.title}</h2>
-          <p class="mono state"><span class="dot" aria-hidden="true"></span><span data-status role="status">Offline, showing last known values</span></p>
+          <p class="mono state"><span class="dot" aria-hidden="true"></span><span data-status role="status">{offline}</span></p>
         </div>
         <dl class="stats">
           {b.rows.map(([label, key, fallback, fmt, of]) => (
@@ -42,7 +45,7 @@ const blocks: { title: string; key: string; rows: Row[] }[] = [
             </div>
           ))}
         </dl>
-        {b.key === 'anuntulcasei' && <p class="mono"><time data-field="last_crawl_at" data-fmt="ago">last crawl: n/a</time></p>}
+        {b.key === 'anuntulcasei' && <p class="mono"><time data-field="last_crawl_at" data-fmt="ago">Last crawl: n/a</time></p>}
         {b.key === 'minecraft' && (
           <div class="mc">
             <h3>Deaths this season</h3>
@@ -52,12 +55,13 @@ const blocks: { title: string; key: string; rows: Row[] }[] = [
           </div>
         )}
       </section>
-    ))}
+    );})}
   </div>
 </Base>
 
 <script>
-  import '../scripts/scenes/live';
+  import { later } from '../scripts/idle';
+  later(() => import('../scripts/scenes/live'));
 </script>
 
 <style>
@@ -80,7 +84,9 @@ const blocks: { title: string; key: string; rows: Row[] }[] = [
   .gauge i { position: absolute; left: 0; top: -1px; width: 100%; height: 3px; background: var(--accent); transform: scaleX(var(--v, 0)); transform-origin: left; transition: transform var(--dur-scene) var(--ease-tide); }
   [hidden] { display: none !important; }
   .mc h3 { font-size: var(--fs-md); margin: var(--space-4) 0 var(--space-1); }
+  .mc:has([data-board][hidden]):has([data-empty][hidden]) h3 { display: none; } /* offline: no board, no empty sentence, so no orphan heading */
   .board { display: grid; gap: 4px; }
   .mc p { margin-top: var(--space-1); }
   .block > .mono { margin-top: var(--space-3); }
+  time { text-transform: none; }
 </style>

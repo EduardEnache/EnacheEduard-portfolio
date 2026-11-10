@@ -26,11 +26,12 @@ const first = projects[0];
             <Card slug={p.id} index={i} title={p.data.title} tagline={p.data.tagline} status={p.data.status} year={p.data.year} shots={shotsOf(p.data.screenshots)} />
           ))}
         </ol>
-        <div class="hub" aria-live="polite" aria-atomic="true">
-          <span class="mono h-idx">01 / {String(projects.length).padStart(2, '0')}</span>
-          <span class="h-name">{first.data.title}</span>
-          <span class="h-desc">{first.data.tagline}</span>
-          <span class="mono h-stat">{first.data.status} / {first.data.year}</span>
+        <div class="hub">
+          <span class="sr h-live" role="status" aria-live="polite" aria-atomic="true"></span>
+          <span class="mono h-idx" aria-hidden="true">01 / {String(projects.length).padStart(2, '0')}</span>
+          <span class="h-name" aria-hidden="true">{first.data.title}</span>
+          <span class="h-desc" aria-hidden="true">{first.data.tagline}</span>
+          <span class="mono h-stat" aria-hidden="true">{first.data.status} / {first.data.year}</span>
         </div>
       </div>
     </div>

@@ -7,8 +7,6 @@ export const site = {
   pitch: 'QA engineer who builds things end to end: data pipelines, dashboards and self-hosted products, from the scraper to the monitoring.',
   subline: 'MSc Mobile Communications, 6G thesis graded 10/10.',
   coordinates: '55.67 N 12.57 E',
-  // placeholder until the domain and mailbox exist
-  email: 'hello@eduardenache.ro',
   linkedin: 'https://www.linkedin.com/in/eduard-florentin-enache',
   github: 'https://github.com/EduardEnache',
   cvPdf: '/cv/Eduard-Enache-CV.pdf',

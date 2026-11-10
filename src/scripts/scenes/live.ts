@@ -5,7 +5,6 @@ import { hydrateLive } from '../live';
 import { pulse, tickBlock } from './live-pulse';
 
 const EVERY = 60_000;
-const OFFLINE = 'Offline, showing last known values';
 
 scene('live', (el) => {
   mm.add({ motion: conditions.motion, reduce: conditions.reduce }, (ctx) => {
@@ -33,7 +32,11 @@ scene('live', (el) => {
       const ok = await hydrateLive(el);
       busy = false;
       if (dead) return;
-      if (!ok) blocks.forEach((b) => { b.dataset.state = 'offline'; b.querySelector('[data-status]')!.textContent = OFFLINE; });
+      if (!ok) blocks.forEach((b) => { // values already shown from an earlier answer are "last known" too
+        const seen = b.dataset.state !== 'offline';
+        b.dataset.state = 'offline';
+        b.querySelector('[data-status]')!.textContent = seen ? 'Offline, last known values' : (b.dataset.offline ?? 'Offline');
+      });
       schedule();
     }
     const onVisible = () => {

@@ -14,7 +14,7 @@ export function mountFan(root: HTMLElement): () => void {
   const spokes = [...root.querySelectorAll<HTMLElement>('.spoke')];
   const cards = spokes.map((s) => s.querySelector<HTMLElement>('.card')!);
   const ins = cards.map((c) => c.querySelector<HTMLElement>('.in')!);
-  const hub = { i: root.querySelector('.h-idx')!, n: root.querySelector('.h-name')!, d: root.querySelector('.h-desc')!, s: root.querySelector('.h-stat')! };
+  const hub = { live: root.querySelector('.h-live')!, i: root.querySelector('.h-idx')!, n: root.querySelector('.h-name')!, d: root.querySelector('.h-desc')!, s: root.querySelector('.h-stat')! };
   const N = cards.length;
   const step = cssNum('--fan-step', root);
   const limit = cssNum('--fan-limit', root);
@@ -23,27 +23,31 @@ export function mountFan(root: HTMLElement): () => void {
   const on = { signal: ac.signal };
   const state = { rot: 0 };
   let active = 0;
-  const typer = { n: 0 };
 
   function print(i: number) {
     const c = cards[i];
-    const txt = c.dataset.desc ?? '';
     hub.i.textContent = `${String(i + 1).padStart(2, '0')} / ${String(N).padStart(2, '0')}`;
     hub.n.textContent = c.dataset.name ?? '';
+    hub.d.textContent = c.dataset.desc ?? '';
     hub.s.textContent = c.dataset.stat ?? '';
-    gsap.killTweensOf(typer);
-    typer.n = 0;
-    gsap.to(typer, { n: txt.length, duration: dur('ui'), ease: 'none', onUpdate: () => { hub.d.textContent = txt.slice(0, Math.round(typer.n)); } });
-    gsap.fromTo([hub.n, hub.s], { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: dur('ui'), stagger: cssNum('--stagger') });
+    hub.live.textContent = `${c.dataset.name}. ${c.dataset.desc}. ${c.dataset.stat}`; // announced once per card
+    gsap.fromTo([hub.n, hub.d, hub.s], { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: dur('ui'), stagger: cssNum('--stagger'), overwrite: true });
   }
 
+  /* per frame: only transform/opacity, only for cards that moved, cards outside the arc are hidden and left alone */
+  const seen: { t: string; o: string; z: string; v: boolean; l: number }[] = Array.from({ length: N }, () => ({ t: '', o: '', z: '', v: true, l: -1 }));
   function render() {
     for (let i = 0; i < N; i++) {
-      const f = i - state.rot, a = f * step, d = Math.abs(f), l = Math.max(0, 1 - d);
-      spokes[i].style.transform = `rotate(${a}deg)`;
-      spokes[i].style.opacity = String(clamp01((limit - Math.abs(a)) / 12));
-      spokes[i].style.zIndex = String(Math.round(100 - d * 10));
-      ins[i].style.transform = `translateY(${-lift * l}px) scale(${1 + 0.06 * l})`;
+      const f = i - state.rot, a = f * step, d = Math.abs(f), memo = seen[i];
+      const vis = Math.abs(a) < limit;
+      if (vis !== memo.v) { memo.v = vis; spokes[i].style.visibility = vis ? '' : 'hidden'; spokes[i].style.willChange = vis ? 'transform' : 'auto'; }
+      if (!vis) continue;
+      const t = `rotate(${a}deg)`, o = String(clamp01((limit - Math.abs(a)) / 12)), z = String(Math.round(100 - d * 10)), l = Math.max(0, 1 - d);
+      if (t !== memo.t) { memo.t = t; spokes[i].style.transform = t; }
+      if (o !== memo.o) { memo.o = o; spokes[i].style.opacity = o; }
+      if (z !== memo.z) { memo.z = z; spokes[i].style.zIndex = z; }
+      if (l !== memo.l && (l > 0 || memo.l > 0)) { ins[i].style.transform = `translateY(${-lift * l}px) scale(${1 + 0.06 * l})`; }
+      memo.l = l;
     }
     const idx = Math.round(state.rot);
     if (idx !== active) {
@@ -95,7 +99,7 @@ export function mountFan(root: HTMLElement): () => void {
     ac.abort();
     drag.kill();
     tween.kill();
-    gsap.killTweensOf(typer);
+    gsap.killTweensOf([hub.n, hub.d, hub.s]);
     spokes.forEach((s) => s.removeAttribute('style'));
     root.querySelectorAll<HTMLElement>('.fb').forEach((f) => f.removeAttribute('style'));
     ins.forEach((i) => i.removeAttribute('style'));

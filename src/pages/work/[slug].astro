@@ -47,7 +47,8 @@ const hasStory = (data.story?.length ?? 0) > 0;
 </Base>
 
 <script>
-  import '../../scripts/scenes/project';
+  import { later } from '../../scripts/idle';
+  later(() => import('../../scripts/scenes/project'));
 </script>
 
 <style>

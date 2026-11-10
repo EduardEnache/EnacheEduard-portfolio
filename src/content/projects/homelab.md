@@ -27,15 +27,13 @@ story:
   - label: Watching
     title: "An alert only when something changes"
     text: "A watchdog runs every five minutes and checks for containers that are down, unhealthy or restarting, a full disk, low memory, failed units and a pending reboot. It messages me on Telegram when the state changes and repeats after 12 hours, so the channel stays readable. It also pings an outside dead-man switch on every run, so if the VM, the power or the network goes down I still get told."
-    shot: "grafana/command-center.webp | Grafana command-center dashboard in dark mode: stat tiles for running services, targets up, CPU, memory and disk, then a table of running services by stack with CPU, memory and network, and graphs of CPU and memory per stack"
   - label: The hard part
     title: "Updates that undo themselves"
     text: "Once a week the updater tags the current images as a rollback point, pulls and rebuilds, and waits up to three minutes for every container to report healthy. If one does not, it restores the old images and recreates the stack. I proved the rollback on a throwaway stack first, and I keep the Minecraft server out of the weekly run because its mods have to match each game version."
   - label: Result
     title: "A crash that changed the rules"
     text: "A test run that opened browsers without a limit filled memory and swap and froze the whole VM for about an hour. Since then every heavy workload runs under a memory cap, and containers have limits too. The box can be rebuilt from one bootstrap script and a written recovery guide, and every service is its own git repo with a changelog."
-screenshots:
-  - "grafana/command-center.webp | Grafana command-center dashboard in dark mode: stat tiles for running services, targets up, CPU, memory and disk, then a table of running services by stack with CPU, memory and network, and graphs of CPU and memory per stack"
+screenshots: []
 ---
 A Proxmox host runs an Ubuntu VM that hosts every service as a Docker Compose stack. A watchdog checks the stacks every
 five minutes and sends Telegram alerts; a dead-man switch tells me if the watchdog itself stops.

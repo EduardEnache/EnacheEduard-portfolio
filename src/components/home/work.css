@@ -23,7 +23,7 @@
 .card .in { position: relative; display: block; height: var(--ch); border-radius: var(--radius-card); overflow: hidden; background: var(--surface); border: 1px solid var(--line); }
 .card .fa, .card .fb { position: absolute; inset: 0 0 36px 0; display: block; overflow: hidden; }
 .card .fb, .card .fb.ta { display: none; }
-.card img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; pointer-events: none; }
+.card img { width: 100%; height: 100%; object-fit: cover; object-position: 0 0; pointer-events: none; }
 .card .fa.t { display: flex; align-items: flex-end; padding: 14px; }
 .card .tn { position: relative; font-family: var(--font-display); font-weight: 800; font-variation-settings: 'wdth' 88; text-transform: uppercase; letter-spacing: -0.01em; line-height: 0.98; font-size: calc(var(--cw) * 0.1); }
 .card .tn.o { color: transparent; -webkit-text-stroke: 1.2px var(--water-900); }
@@ -63,13 +63,13 @@
 
 .has-motion .fan-zone { position: absolute; left: 0; right: 0; bottom: 0; top: 34%; padding: 0; touch-action: pan-y; cursor: grab; }
 .has-motion .fan { position: absolute; left: 50%; bottom: 0; width: 0; height: 0; z-index: 2; display: block; overflow: visible; padding: 0; scroll-snap-type: none; }
-.has-motion .spoke { position: absolute; left: 0; top: 0; width: 0; height: 0; flex: none; transform-origin: 0 0; transform: rotate(calc(var(--i) * var(--fan-step))); will-change: transform; }
+.has-motion .spoke { position: absolute; left: 0; top: 0; width: 0; height: 0; flex: none; transform-origin: 0 0; transform: rotate(calc(var(--i) * var(--fan-step))); }
 .has-motion .card { position: absolute; width: var(--cw); height: var(--ch); left: calc(var(--cw) / -2); top: calc(-1 * (var(--R) + var(--ch))); }
 .has-motion .card .in { position: absolute; inset: 0; height: auto; }
 .has-motion .card.on .in { border-color: var(--accent); }
 .has-motion .card .fb { display: block; opacity: 0; mask-size: calc(var(--cell) * 8) calc(var(--cell) * 8); }
 .has-motion .card .fb.ta { display: flex; }
-.has-motion .card .cap { display: none; }
+.has-motion .card .cap { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; } /* stays the link's accessible name */
 .has-motion .card.on .dr * { animation: draw var(--dur-scene) var(--ease-tide) both; }
 @keyframes draw { from { stroke-dashoffset: 1; } }
 .has-motion .hub {
@@ -77,15 +77,19 @@
   border-radius: 999px 999px 0 0; background: var(--surface); border: 1.5px solid var(--accent); border-bottom: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; padding: 0 var(--space-3) 18px; text-align: center; pointer-events: none;
 }
+
+.hub .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .hub .h-idx, .hub .h-stat { color: var(--sky-300); }
 .hub .h-name { font-family: var(--font-display); font-weight: 800; font-variation-settings: 'wdth' 112; text-transform: uppercase; letter-spacing: -0.01em; line-height: 1; font-size: clamp(15px, 1.6vw, 22px); max-width: 20em; }
 .hub .h-desc { font-size: clamp(12px, 1vw, var(--fs-sm)); line-height: 1.4; color: var(--paper); max-width: 32ch; min-height: 2.8em; }
 
 @media (max-width: 700px) {
-  .work { --cw: 60vw; --rh: min(47vw, 230px); --fan-step: 30deg; --pin-len: 190svh; }
+  .work { --cw: 66vw; --rh: min(52vw, 230px); --fan-step: 30deg; --pin-len: 190svh; }
   .kn { font-size: min(10.4vw, 100px); }
   .has-motion .hub { gap: 4px; padding-bottom: 12px; }
   .has-motion .hub .h-desc { font-size: 12px; line-height: 1.3; min-height: 0; }
+  /* the width-axis squeeze re-lays out three huge text rows every frame; phones keep the roll only */
+  .has-motion .kn .row { animation: none; --w: var(--wdth-max); }
 }
 @media (prefers-reduced-motion: reduce) {
   .has-motion .kn .col, .has-motion .kn .row, .has-motion .card.on .dr * { animation: none; }

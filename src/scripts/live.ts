@@ -42,8 +42,8 @@ function fill(block: HTMLElement, d: Data) {
     el.dataset.prev = el.textContent ?? ''; // lets a scene tick from the old value to the new one
     if (el.dataset.fmt === 'ago') { // relative time inside a <time datetime>
       const iso = typeof d[el.dataset.field!] === 'string' ? (d[el.dataset.field!] as string) : '';
-      if (iso && el instanceof HTMLTimeElement) { el.dateTime = iso; el.textContent = `crawled ${ago(iso)}`; return; }
-      el.textContent = NA; return;
+      if (iso && el instanceof HTMLTimeElement) { el.dateTime = iso; el.textContent = `Last crawl: ${ago(iso)}`; return; }
+      el.textContent = 'Last crawl: n/a'; return;
     }
     el.textContent = format(el, d) ?? NA;
   });

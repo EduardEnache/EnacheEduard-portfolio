@@ -18,7 +18,7 @@ export function pulse(block: HTMLElement) {
   const run = block.querySelector<HTMLElement>('.pulse-run');
   if (!run || reduced()) return;
   gsap.killTweensOf(run);
-  gsap.fromTo(run, { x: -run.offsetWidth, opacity: 1 }, { x: run.parentElement!.clientWidth, duration: dur('scene'), ease: ease('tide'), onComplete: () => gsap.set(run, { opacity: 0 }) });
+  gsap.fromTo(run, { x: -run.offsetWidth, opacity: 1 }, { x: run.parentElement!.clientWidth - run.offsetWidth, duration: dur('scene'), ease: ease('tide'), onComplete: () => gsap.set(run, { opacity: 0 }) });
 }
 
 /**
@@ -34,7 +34,9 @@ export function tickBlock(block: HTMLElement): () => void {
     if (from === to || !m || end === null) return;
     const dec = (m[0].split('.')[1] ?? '').length;
     const write = (v: number) => { el.textContent = to.replace(m[0], v.toLocaleString('en', { minimumFractionDigits: dec, maximumFractionDigits: dec })); };
-    const start = num(from) ?? 0;
+    // nothing to tick from ("n/a"): count up from 0 only when the block is already on screen, never leave a parked 0
+    const start = num(from) ?? (block.getBoundingClientRect().top < innerHeight ? 0 : null);
+    if (start === null) return;
     jobs.push({ el, o: { v: start }, end, write });
     write(start);
   });

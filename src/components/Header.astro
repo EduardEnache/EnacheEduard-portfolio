@@ -16,9 +16,14 @@ import { site, nav } from '../data/site';
   .wordmark { display: inline-flex; align-items: center; min-height: 44px; font-family: var(--font-display); font-stretch: 125%; font-weight: 800; text-transform: uppercase; letter-spacing: -0.02em; text-decoration: none; margin-right: auto; }
   nav { position: relative; }
   nav ul { display: flex; gap: var(--space-3); }
-  nav a { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--fs-sm); text-decoration: none; }
+  nav a { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding-inline: 4px; font-size: var(--fs-sm); text-decoration: none; }
   /* one short gold underline that slides to the current item; only transform animates */
   .nav-mark { position: absolute; left: 0; bottom: 4px; width: var(--space-3); height: 2px; background: var(--accent); transition: transform var(--dur-ui) var(--ease-tide); }
   .coords { display: none; }
   @media (min-width: 900px) { .coords { display: block; } }
+  @media (max-width: 700px) {
+    .site-header { gap: var(--space-1); padding-block: var(--space-2); }
+    .wordmark { font-size: var(--fs-xs); white-space: nowrap; }
+    nav ul { gap: 0; }
+  }
 </style>

@@ -29,7 +29,7 @@ scene('cv', (el) => {
 
     const rise = (items: string, trigger: string) => {
       const rows = el.querySelectorAll<HTMLElement>(items);
-      if (rows.length) gsap.from(rows, { opacity: 0, y: lift, duration: dur('reveal'), ease: tide, stagger, scrollTrigger: { trigger: el.querySelector(trigger)!, start: 'top 85%', once: true } });
+      if (rows.length && el.querySelector(trigger)!.getBoundingClientRect().top >= innerHeight) gsap.from(rows, { opacity: 0, y: lift, duration: dur('reveal'), ease: tide, stagger, scrollTrigger: { trigger: el.querySelector(trigger)!, start: 'top 85%', once: true } });
     };
     rise('.skills > div', '.skills');
     rise('.certs li', '.certs');

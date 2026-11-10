@@ -4,12 +4,13 @@ import '../live/pulse.css';
 interface Props { data: ProjectData }
 const { data } = Astro.props;
 const block = data.live ? liveRows[data.live] : undefined;
+const offline = block?.rows.some((r) => r[2] !== 'n/a') ? 'Offline, last known values' : 'Offline';
 ---
 {data.live && block && (
   <section class="p-live wrap" aria-label={block.title}>
     <div class="live" data-live={data.live} data-state="offline" data-scene="project-live">
       <span class="pulse-rail" aria-hidden="true"><i class="pulse-run"></i></span>
-      <p class="mono live-head"><span class="dot" aria-hidden="true"></span><span>{block.title}</span><span data-status>Offline, showing last known values</span></p>
+      <p class="mono live-head"><span class="dot" aria-hidden="true"></span><span>{block.title}</span><span data-status>{offline}</span></p>
       <dl class="live-rows">
         {block.rows.map(([label, key, fallback, fmt, of]) => (
           <div><dt class="mono">{label}</dt><dd data-field={key} data-fmt={fmt} data-of={of}>{fallback}</dd></div>

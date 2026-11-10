@@ -13,7 +13,7 @@ const cv = (await getEntry('cv', 'cv'))!.data;
       if (!matchMedia('(prefers-reduced-motion: reduce)').matches) document.currentScript.parentElement.classList.add('has-motion');
     </script>
     <header>
-      <h1><span class="no-print">CV</span><span class="print-only">Eduard Enache</span></h1>
+      <h1><span class="no-print">CV</span>{' '}<span class="print-only">Eduard Enache</span></h1>
       <p class="print-only">Bucharest, Romania | Contact: eduardenache.ro/contact | linkedin.com/in/eduard-florentin-enache | github.com/EduardEnache</p>
       <p class="no-print cta"><a class="btn btn-primary dl" href={site.cvPdf} download>Download CV</a><span class="mono">PDF</span></p>
       <p class="summary">{cv.summary}</p>
@@ -73,7 +73,8 @@ const cv = (await getEntry('cv', 'cv'))!.data;
 </Base>
 
 <script>
-  import '../../scripts/scenes/cv';
+  import { later } from '../../scripts/idle';
+  later(() => import('../../scripts/scenes/cv'));
 </script>
 
 <style>

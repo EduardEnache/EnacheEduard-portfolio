@@ -10,7 +10,7 @@ const items = data.numbers?.length
 ---
 {items.length > 0 && (
   <section class="p-nums wrap" aria-label="Key numbers">
-    <ul class="nums">
+    <ul class:list={['nums', { many: items.length >= 4 }]}>
       {items.map((x) => (
         <li class="num-item">
           <span class="mono">{x.label}</span>

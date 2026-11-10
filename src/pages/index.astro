@@ -39,7 +39,8 @@ const facts = [
 </Base>
 
 <script>
-  import '../scripts/scenes/fan';
+  import { later } from '../scripts/idle';
+  later(() => import('../scripts/scenes/fan'));
 </script>
 
 <style>
