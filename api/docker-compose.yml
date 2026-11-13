@@ -8,6 +8,7 @@ services:
     env_file: .env
     environment:
       PORT: "8080"
+      CLOUDFLARE_TUNNEL_TOKEN: "" # env_file holds it for compose interpolation only; the API must not see it
     ports:
       - "127.0.0.1:${HOST_PORT:-8506}:8080"
     volumes: # .git dirs only, read-only; the API runs `git rev-list` / `git log` on them
@@ -37,6 +38,10 @@ services:
     volumes: # dist/ and the generated CSP are rebuilt on the host (`npm run deploy:local`)
       - ../dist:/usr/share/nginx/html:ro
       - ../nginx:/etc/nginx/conf.d:ro # a directory, so edits are seen after a restart (default.conf is the only *.conf)
+      - ../nginx/cf.conf.template:/etc/nginx/templates/cf.conf.template:ro # CF_IP is filled in at start, output goes to /tmp
+    environment:
+      CF_IP: ${CF_IP:?set CF_IP in .env}
+      NGINX_ENVSUBST_OUTPUT_DIR: /tmp
     tmpfs: [/tmp]
     read_only: true
     cap_drop: [ALL]
@@ -50,6 +55,25 @@ services:
       start_period: 5s
     networks:
       web: { ipv4_address: "${WEB_IP}" }
+
+  # Cloudflare Tunnel: eduardenache.ro + www -> http://web:8080 (hostnames are set in the Cloudflare Zero Trust dashboard).
+  # Outbound-only, no ports. Fixed address so nginx trusts CF-Connecting-IP from this peer only.
+  cloudflared:
+    image: cloudflare/cloudflared:2026.10.0
+    container_name: portfolio-cloudflared
+    profiles: ["tunnel"] # enabled by scripts/cutover.sh (COMPOSE_PROFILES=tunnel in api/.env)
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-} # compose interpolates even with the profile off, so no :?; cutover.sh checks it
+    depends_on: { web: { condition: service_healthy } }
+    user: "65532:65532"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 128m
+    networks:
+      web: { ipv4_address: "${CF_IP:?set CF_IP in .env}" }
 
 # Existing networks of the three read-only sources (names come from .env).
 networks:

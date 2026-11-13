@@ -1,0 +1,4 @@
+# Rendered to /tmp/cf.conf at container start (envsubst on CF_IP). Included from default.conf (http context).
+map $remote_addr $cf_peer { default ""; ${CF_IP} 1; }
+map $http_cf_connecting_ip $cf_hdr { "~^[0-9a-fA-F:.]{3,45}$" $http_cf_connecting_ip; default ""; }
+map $cf_peer $cf_ip { 1 $cf_hdr; default ""; }
